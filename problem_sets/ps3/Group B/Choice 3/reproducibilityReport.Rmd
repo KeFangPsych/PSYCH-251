@@ -1,0 +1,167 @@
+---
+title: "Reproducibility Report: Group B Choice 3"
+output:
+  html_document:
+    toc: yes
+    toc_float: yes
+  pdf_document:
+    toc: yes
+---
+
+-------
+
+For this exercise, please try to reproduce the results from Experiment 2 of the associated paper (de la Fuente, Santiago, Roman, Dumitrache, & Casasanto, 2014). The PDF of the paper is included in the same folder as this Rmd file. 
+
+#### Methods summary: 
+
+Researchers tested the question of whether temporal focus differs between Moroccan and Spanish cultures, hypothesizing that Moroccans are more past-focused, whereas Spaniards are more future-focused. Two groups of participants ($N = 40$ Moroccan and $N=40$ Spanish) completed a temporal-focus questionnaire that contained questions about past-focused ("PAST") and future-focused ("FUTURE") topics. In response to each question, participants provided a rating on a 5-point Likert scale on which lower scores indicated less agreement and higher scores indicated greater agreement. The authors then performed a mixed-design ANOVA with agreement score as the dependent variable, group (Moroccan or Spanish, between-subjects) as the fixed-effects factor, and temporal focus (past or future, within-subjects) as the random effects factor. In addition, the authors performed unpaired two-sample t-tests to determine whether there was a significant difference between the two groups in agreement scores for PAST questions, and whether there was a significant difference in scores for FUTURE questions.
+
+------
+
+#### Target outcomes: 
+
+Below is the specific result you will attempt to reproduce (quoted directly from the results section of Experiment 2):
+
+> According to a mixed analysis of variance (ANOVA) with group (Spanish vs. Moroccan) as a between-subjects factor and temporal focus (past vs. future) as a within-subjectS factor, temporal focus differed significantly between Spaniards and Moroccans, as indicated by a significant interaction of temporal focus and group, F(1, 78) = 19.12, p = .001, ηp2 = .20 (Fig. 2). Moroccans showed greater agreement with past-focused statements than Spaniards did, t(78) = 4.04, p = .001, and Spaniards showed greater agreement with future-focused statements than Moroccans did, t(78) = −3.32, p = .001. (de la Fuente et al., 2014, p. 1685).
+
+------
+
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE, warning=FALSE, message=FALSE)
+```
+
+# Step 1: Load packages
+
+```{r}
+library(tidyverse) # for data munging
+library(knitr) # for kable table formating
+library(haven) # import and export 'SPSS', 'Stata' and 'SAS' Files
+library(readxl) # import excel files
+library(ggplot2)
+
+# #optional packages/functions:
+library(afex) # anova functions
+# library(ez) # anova functions 2
+# library(scales) # for plotting
+# std.err <- function(x) sd(x)/sqrt(length(x)) # standard error
+```
+
+# Step 2: Load data
+
+```{r}
+# Just Experiment 2
+data_path <- 'data/DeLaFuenteEtAl_2014_RawData.xls'
+d <- read_excel(data_path, sheet=3)
+print(head(d))
+```
+
+# Step 3: Tidy data
+
+Note: The scale for Agreement is (0=complete disagreement; 5=complete agreement)
+```{r}
+tidy_df <- d %>%
+  rename(Agreement = `Agreement (0=complete disagreement; 5=complete agreement)`)
+print(head(tidy_df))
+```
+
+# Step 4: Run analysis
+
+## Pre-processing
+
+```{r}
+tidy_df <- tidy_df %>%
+  mutate(group = ifelse(group == "young Spaniard", "Spaniard", group))
+```
+
+## Descriptive statistics
+
+Try to recreate Figure 2 (fig2.png, also included in the same folder as this Rmd file):
+
+```{r}
+# Calculate mean and standard error
+summary_df <- tidy_df %>%
+  group_by(group, subscale) %>%
+  summarise(
+    mean = mean(Agreement, na.rm = TRUE),
+    sd = sd(Agreement, na.rm = TRUE),
+    se = sd / sqrt(n())
+  ) %>%
+  ungroup()
+
+# Create the plot
+ggplot(summary_df, aes(x = group, y = mean, fill = subscale)) +
+  geom_bar(stat = "identity", position = position_dodge(width = 0.7), width = 0.6) +
+  geom_errorbar(aes(ymin = mean - se, ymax = mean + se), 
+                position = position_dodge(width = 0.7), width = 0.25) +
+  scale_y_continuous(limits = c(2, 4), oob = scales::squish) + # Setting the y-axis limits
+  labs(x = "", y = "Rating") +
+  scale_fill_grey(start = 0.8, end = 0.5) + 
+  theme_minimal() +
+  theme(legend.title = element_blank(),
+        legend.position = "top",
+        axis.text.x = element_text(angle = 45, hjust = 1),
+        plot.title = element_text(hjust = 0.5)) +
+  ggtitle("Figure 2. Results of Experiment 2") 
+
+```
+
+## Inferential statistics
+
+> According to a mixed analysis of variance (ANOVA) with group (Spanish vs. Moroccan) as a between-subjects factor and temporal focus (past vs. future) as a within-subjects factor, temporal focus differed significantly between Spaniards and Moroccans, as indicated by a significant interaction of temporal focus and group, F(1, 78) = 19.12, p = .001, ηp2 = .20 (Fig. 2).
+
+
+```{r}
+tidy_df$unique_id <- interaction(tidy_df$group, tidy_df$participant)
+
+# Run a mixed ANOVA
+anova_results <- aov_ez("unique_id", "Agreement", tidy_df, between = "group", within = "subscale", detailed = TRUE)
+
+# Get the summary of the ANOVA
+summary_table <- summary(anova_results)
+
+# Extract the F value, degrees of freedom, and p-value for the interaction effect
+interaction_effect <- anova_results$anova_table[3,]
+
+result_string <- sprintf("F(%d, %d) = %.2f, p = %.5f, ηp² = %.2f", interaction_effect$`num Df`, interaction_effect$`den Df`, interaction_effect$F, interaction_effect$`Pr(>F)`, interaction_effect$ges)
+print(result_string)
+
+```
+
+> Moroccans showed greater agreement with past-focused statements than Spaniards did, t(78) = 4.04, p = .001, 
+
+```{r}
+mean_agreement <- tidy_df %>%
+  group_by(group, subscale, unique_id) %>%
+  summarize(mean_agreement = mean(Agreement, na.rm = TRUE), .groups = 'drop')
+
+t_test_results <- t.test(mean_agreement ~ group, data = subset(mean_agreement, subscale == "PAST"))
+
+# Output the results
+print(t_test_results)
+
+```
+
+> and Spaniards showed greater agreement with future-focused statements than Moroccans did, t(78) = −3.32, p = .001.(de la Fuente et al., 2014, p. 1685)
+
+```{r}
+t_test_results <- t.test(mean_agreement ~ group, data = subset(mean_agreement, subscale == "FUTURE"))
+
+# Output the results
+print(t_test_results)
+
+```
+
+# Step 5: Reflection
+
+Were you able to reproduce the results you attempted to reproduce? If not, what part(s) were you unable to reproduce?
+
+I was able to reproduce the general direction of the results, but not the exact numbers. I think there may have been some issues with excluding the data that were different for their work and mine. 
+
+How difficult was it to reproduce your results? 
+
+It wasn't too difficult, however more instructions for the F test and knowing to take the mean for the t test would have been helpful. 
+
+What aspects made it difficult? What aspects made it easy?
+
+The difficult part was largely not being sure what preprocessing I would be doing. ChatGPT made going through this much easier though, as I was able to get code for what I wanted to do.
+
