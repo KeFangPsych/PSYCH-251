@@ -1,0 +1,477 @@
+---
+title: 'Data Cleaning: Rogers et al. (2017) Study 1 Close Replication'
+author: "Ke Fang"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+    code_folding: show
+    theme: flatly
+    df_print: kable
+  pdf_document:
+    toc: true
+subtitle: "De-identify & mark duplicates, drop unused columns, then recode each variable"
+editor_options:
+  markdown:
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+
+library(tidyverse)
+
+## --- config -----------------------------------------------------------------
+in_path   <- "../data/PSYCH-251-Replication_June 8, 2026_11.17.csv"  # RAW export (contains PROLIFIC_PID)
+deid_path <- "../data/data_deid.rds"                                 # de-identified, duplicate-marked
+out_path  <- "../data/data_clean.rds"                                # analysis-ready (consumed by 02)
+
+## The de-identification chunk below is the ONLY step that touches PROLIFIC_PID.
+## For a public release, set this FALSE (or comment the chunk out) and ship the
+## committed `data_deid.rds`; the rest of the pipeline runs unchanged.
+RAW_PII_AVAILABLE <- FALSE
+
+## --- helpers ----------------------------------------------------------------
+## Parse a 7-point rating from the choice-text export. Middle points (2-6) come
+## back as bare numbers; LABELED endpoints come back as text ("7 - Extremely
+## deceptive"). Extract the leading integer so endpoints aren't lost to NA.
+parse_rating <- function(x) as.integer(str_extract(x, "^\\s*\\d+"))
+
+## Classify the choice by content (the honest option is identical across
+## conditions; response order is counterbalanced, so do NOT key on position).
+classify_choice <- function(x) {
+  case_when(
+    is.na(x)                                  ~ NA_character_,
+    str_detect(x, "never had problems")       ~ "lie",
+    str_detect(x, "drives very smoothly")     ~ "palter",
+    str_detect(x, "would not start|mechanic") ~ "honest",
+    TRUE                                      ~ "unclassified"
+  )
+}
+```
+
+
+# Preregistration
+
+See: https://osf.io/w2qcd/overview
+
+# Purpose
+
+This is the cleaning stage. It 
+(1) reads the raw Qualtrics export, marks duplicate Prolific IDs, and **discards `PROLIFIC_PID`**, saving a de-identified intermediate; then 
+(2) drops irrelevant columns and recodes each analysis variable in its own subsection. 
+The output (`data_clean.rds`) carries the variables `02_analysis.Rmd` expects, the
+eligibility/exclusion flags, the two free-text responses, and several
+quality/fraud-check variables (reCAPTCHA, Qualtrics' duplicate flag, the
+AI free response) for inspecting suspicious responses.
+
+Every response is retained — including incompletes/non-finishers, 
+comprehension screen-outs, and duplicates — but *marked* with flags 
+(`is_real`, `passed_comprehension`, `has_choice`, `ai_excluded`, `is_duplicate`,
+`analysis_ok`, and the quality variables). No rows are dropped. All
+sample selection (the preregistered sample and any exploratory subsets)
+happens at the start of `02_analysis.Rmd` by filtering on these flags.
+
+`PROLIFIC_PID` never leaves the de-identification step and is not stored
+in any saved file.
+
+# De-identification and duplicate marking
+
+> **PII step — run once on the raw export, then set
+> `RAW_PII_AVAILABLE <- FALSE` (or comment this chunk out) for any
+> public release.** It is the only code that reads `PROLIFIC_PID`. It
+> marks duplicates (keeping the first *complete, eligible* response per
+> Prolific ID), drops the ID, and writes the de-identified
+> `data_deid.rds` that every later step reads.
+
+```{r deidentify, eval=RAW_PII_AVAILABLE}
+raw0 <- read_csv(in_path, col_names = FALSE,
+                 col_types = cols(.default = col_character()))
+import_ids <- str_match(unlist(raw0[3, ]), '"ImportId":"([^"]+)"')[, 2]
+import_ids[is.na(import_ids)] <- as.character(unlist(raw0[1, ]))[is.na(import_ids)]
+
+d_raw <- raw0 |>
+  slice(-(1:3)) |>
+  set_names(import_ids) |>
+  transmute(
+    ## identifiers & metadata
+    response_id = `_recordId`,            # Qualtrics response id (not PII)
+    prolific_id = PROLIFIC_PID,           # PII -- used here, then dropped
+    start_date  = startDate,
+    status, finished, progress, duration,
+
+    ## quality / fraud indicators (retained for inspection; not prereg criteria)
+    recaptcha          = Q_RecaptchaScore,
+    qualtrics_dup_flag = Q_DuplicateRespondent,
+
+    ## assignment & randomization
+    consent          = QID3,
+    condition_raw    = condition,
+    text_order_raw   = text_order,
+    rating_bonus_raw = rating_bonus_order,
+    bonus_draw_raw   = bonus_draw,
+
+    ## choice (palter block / lie block)
+    choice_palter = QID5,  choice_lie = QID7,
+
+    ## ratings
+    decep_palter   = QID13, decep_lie   = QID17,
+    honest_palter  = QID15, honest_lie  = QID18,
+    ethical_palter = QID16, ethical_lie = QID19,
+
+    ## comprehension
+    comp_goal_palter  = QID26, comp_goal_lie  = QID29,
+    comp_false_palter = QID27, comp_false_lie = QID36,
+
+    ## probability memory (honest-response prob / misleading-response prob)
+    memhon_palter = QID28, memhon_lie = QID38,
+    memmis_palter = QID39, memmis_lie = QID31,
+
+    ## demographics & free text
+    age_raw    = QID24_TEXT,
+    gender_raw = QID21,
+    ai_text    = QID70_TEXT,   # AI-use disclosure (free text)
+    strategy   = QID69_TEXT    # open-ended reasoning (free text)
+  ) |>
+  mutate(across(everything(), ~ na_if(.x, "")))
+
+## Mark duplicates: keep the FIRST complete eligible response per Prolific ID
+## (prefer made-a-choice, then finished, then earliest start), drop the ID.
+d_deid <- d_raw |>
+  arrange(prolific_id,
+          desc(!is.na(choice_palter) | !is.na(choice_lie)),
+          desc(finished %in% c("True", "TRUE", "1")),
+          start_date) |>
+  group_by(prolific_id) |>
+  mutate(dup_rank = if_else(is.na(prolific_id), 1L, row_number())) |>
+  ungroup() |>
+  mutate(is_duplicate = !is.na(prolific_id) & dup_rank > 1) |>
+  select(-prolific_id, -dup_rank)            # <-- PROLIFIC_PID dropped here
+
+saveRDS(d_deid, deid_path)
+cat("Wrote", deid_path, "-", nrow(d_deid), "rows;",
+    sum(d_deid$is_duplicate), "duplicate(s) marked; PROLIFIC_PID dropped.\n")
+```
+
+# Load de-identified data
+
+Everything below reads the de-identified file, so it works whether or
+not the PII step above ran.
+
+```{r load-deid}
+d <- readRDS(deid_path)
+cat("Loaded", nrow(d), "rows x", ncol(d), "cols (no PROLIFIC_PID).\n")
+cat("'PROLIFIC_PID' present in loaded data:", "PROLIFIC_PID" %in% names(d),
+    "| 'prolific_id' present:", "prolific_id" %in% names(d), "\n")
+glimpse(d)
+```
+
+# Variable cleaning
+
+## Response validity
+
+Real = non-preview and finished. (Comprehension screen-outs are
+sometimes marked `finished = True`, so the analysis sample is defined by
+the comprehension and choice flags below, not by `is_real` alone.)
+
+```{r v-valid}
+d <- d |>
+  mutate(is_real  = !str_detect(coalesce(status, ""), "Preview") &
+                    finished %in% c("True", "TRUE", "1"),
+         progress = as.integer(progress),
+         duration = as.integer(duration))
+d |> count(status, finished, is_real)
+```
+
+## Consent
+
+```{r v-consent}
+d <- d |> mutate(consent_ok = coalesce(consent == "Yes", FALSE))
+d |> count(consent, consent_ok)
+```
+
+## Condition
+
+```{r v-condition}
+d <- d |>
+  mutate(condition     = factor(condition_raw,
+                                levels = c("lying_truth", "paltering_truth"),
+                                labels = c("lie", "palter")),
+         condition_num = if_else(condition == "palter", 1L, 0L))
+d |> count(condition_raw, condition, condition_num)
+```
+
+## Choice → `misleading`
+
+```{r v-choice}
+d <- d |>
+  mutate(choice_text = coalesce(choice_palter, choice_lie),
+         choice      = classify_choice(choice_text),
+         misleading  = case_when(choice %in% c("palter", "lie") ~ 1L,
+                                 choice == "honest"             ~ 0L,
+                                 TRUE                            ~ NA_integer_))
+d |> count(condition, choice)
+```
+
+## Ratings: deceptiveness, honesty, ethicality
+
+```{r v-ratings}
+## the raw endpoint-label issue, before fixing:
+d |> transmute(v = coalesce(decep_palter, decep_lie)) |> drop_na() |>
+  count(v) |> arrange(v) |> print()
+
+d <- d |>
+  mutate(deceptive = parse_rating(coalesce(decep_palter, decep_lie)),
+         honest    = parse_rating(coalesce(honest_palter, honest_lie)),
+         ethical   = parse_rating(coalesce(ethical_palter, ethical_lie)))
+
+d |> summarise(across(c(deceptive, honest, ethical),
+                      list(min = ~min(.x, na.rm = TRUE), max = ~max(.x, na.rm = TRUE),
+                           n_na = ~sum(is.na(.x)))))
+```
+
+## Reverse-coded deceptiveness and ethicality index
+
+```{r v-index}
+d <- d |>
+  mutate(decep_rev    = 8L - deceptive,
+         ethics_index = rowMeans(cbind(honest, ethical, decep_rev)))  # NA if any missing
+d |> filter(!is.na(ethics_index)) |> group_by(condition) |>
+  summarise(n = n(), mean_index = round(mean(ethics_index), 2), .groups = "drop")
+```
+
+## Comprehension screen
+
+```{r v-comprehension}
+d <- d |>
+  mutate(comp1_ok = str_detect(coalesce(comp_goal_palter,  comp_goal_lie),  "To sell the car"),
+         comp2_ok = str_detect(coalesce(comp_false_palter, comp_false_lie), "two small dents"),
+         passed_comprehension = coalesce(comp1_ok, FALSE) & coalesce(comp2_ok, FALSE))
+d |> count(comp1_ok, comp2_ok, passed_comprehension)
+```
+
+## Probability memory (exploratory)
+
+Correct answer for the *misleading*-response item is condition-dependent
+(60% palter / 80% lie); the honest-response item is 30% in both. Not an
+exclusion.
+
+```{r v-memory}
+d <- d |>
+  mutate(mem_misleading = coalesce(memmis_palter, memmis_lie),
+         mem_honest     = coalesce(memhon_palter, memhon_lie),
+         mem_misleading_correct = case_when(
+           is.na(mem_misleading)                           ~ NA,
+           condition == "palter" & mem_misleading == "60%" ~ TRUE,
+           condition == "lie"    & mem_misleading == "80%" ~ TRUE,
+           TRUE                                            ~ FALSE),
+         mem_honest_correct = case_when(
+           is.na(mem_honest)   ~ NA,
+           mem_honest == "30%" ~ TRUE,
+           TRUE                ~ FALSE))
+d |> group_by(condition) |>
+  summarise(recall_mis = mean(mem_misleading_correct, na.rm = TRUE),
+            recall_hon = mean(mem_honest_correct, na.rm = TRUE), .groups = "drop")
+```
+
+## Bonus draw and bonus earned
+
+Earned the \$1 if the 1–100 draw ≤ the success probability of the chosen
+response (30 honest / 60 palter / 80 lie). Descriptive; earned rates
+should track those.
+
+```{r v-bonus}
+d <- d |>
+  mutate(bonus_draw      = as.integer(bonus_draw_raw),
+         bonus_threshold = case_when(choice == "honest" ~ 30L,
+                                     choice == "palter" ~ 60L,
+                                     choice == "lie"    ~ 80L,
+                                     TRUE                ~ NA_integer_),
+         bonus_earned    = bonus_draw <= bonus_threshold)
+d |> filter(!is.na(choice)) |> group_by(choice) |>
+  summarise(n = n(), earned_rate = round(mean(bonus_earned, na.rm = TRUE), 2),
+            draw_mean = round(mean(bonus_draw, na.rm = TRUE), 1), .groups = "drop")
+```
+
+## Order variables
+
+```{r v-order}
+d <- d |>
+  mutate(text_order         = factor(text_order_raw),
+         rating_bonus_order = factor(rating_bonus_raw,
+                                     levels = c("ratings_first", "bonus_first")))
+d |> count(rating_bonus_order)
+```
+
+## Demographics
+
+```{r v-demographics}
+d <- d |>
+  mutate(age    = suppressWarnings(as.integer(na_if(str_trim(age_raw), "-99"))),
+         gender = gender_raw)
+d |> summarise(age_min = min(age, na.rm = TRUE), age_med = median(age, na.rm = TRUE),
+               age_max = max(age, na.rm = TRUE), n_age_na = sum(is.na(age)))
+d |> count(gender)
+```
+
+## Free-text responses
+
+Keep both open-ended responses for qualitative review (and the AI screen
+below). Qualtrics writes `-99` for some skipped text fields; treat those
+as missing.
+
+```{r v-freetext}
+d <- d |>
+  mutate(strategy = na_if(str_trim(strategy), "-99"),
+         ai_text  = na_if(str_trim(ai_text),  "-99"))
+d |> summarise(n_strategy = sum(!is.na(strategy)), n_ai_text = sum(!is.na(ai_text)))
+```
+
+## AI-use disclosure
+
+Per the preregistration, exclude only participants who **explicitly
+disclose** AI use. A keyword screen flags candidates, but most are
+emphatic denials, so we exclude only those whose text affirmatively
+indicates AI use. All flagged responses are printed for manual
+verification; override with `ai_force_exclude` / `ai_force_keep` (by
+`response_id`) if any are misclassified.
+
+```{r v-ai}
+ai_terms  <- "chatgpt|chat gpt|\\bgpt\\b|openai|\\bclaude\\b|gemini|copilot|\\bbard\\b|\\bllm\\b|deepseek|artificial intelligence|\\bai\\b"
+ai_affirm <- "^\\s*(yes|si|yeah|yep|sure)\\b|\\b(used an? ai|used chatgpt|used gpt|using ai|with chatgpt|with ai)\\b"
+
+ai_force_exclude <- character(0)   # response_ids to FORCE exclude after review
+ai_force_keep    <- character(0)   # response_ids to FORCE keep after review
+
+d <- d |>
+  mutate(ai_text_l   = str_to_lower(coalesce(ai_text, "")),
+         ai_flagged  = str_detect(ai_text_l, ai_terms),
+         ai_excluded = (ai_flagged & str_detect(ai_text_l, ai_affirm) &
+                          !response_id %in% ai_force_keep) |
+                         response_id %in% ai_force_exclude) |>
+  select(-ai_text_l)
+
+cat("AI: flagged for review =", sum(d$ai_flagged),
+    "| excluded as disclosures =", sum(d$ai_excluded), "\n\n")
+d |> filter(ai_flagged) |> transmute(ai_excluded, response_id, ai_text) |>
+  arrange(desc(ai_excluded)) |> print(n = Inf)
+```
+
+## Quality / fraud indicators (retained, not exclusion criteria)
+
+reCAPTCHA v3 score (higher ≈ more human) and Qualtrics' own duplicate
+flag are **not** preregistered exclusion criteria, so they do not feed
+`analysis_ok`. We retain them so the team can inspect suspicious
+("wired") responses; if you later decide to act on them, they are in the
+saved data.
+
+```{r v-quality}
+d <- d |>
+  mutate(recaptcha          = suppressWarnings(as.numeric(recaptcha)),
+         qualtrics_dup_flag  = coalesce(str_to_lower(qualtrics_dup_flag) == "true", FALSE))
+d |> summarise(recaptcha_min = min(recaptcha, na.rm = TRUE),
+               recaptcha_lt_0.5 = sum(recaptcha < 0.5, na.rm = TRUE),
+               qualtrics_dup_flagged = sum(qualtrics_dup_flag),
+               our_dup_flagged = sum(is_duplicate))
+```
+
+## Duplicates (marked in the de-identification step)
+
+`is_duplicate` was set above from `PROLIFIC_PID` (now discarded). Note
+this is distinct from Qualtrics' fingerprint-based `qualtrics_dup_flag`.
+
+```{r v-duplicates}
+d |> count(is_duplicate)
+```
+
+# Eligibility flag and attrition summary
+
+`analysis_ok` uses only the preregistered criteria (consent, real,
+randomized, comprehension, valid choice, no explicit AI disclosure, not
+a Prolific-ID duplicate). reCAPTCHA and the Qualtrics duplicate flag are
+deliberately excluded from this rule. The flag is *added to every row*;
+no rows are dropped here. The table below is a descriptive attrition
+summary — the saved file retains all responses, and `02` applies the
+flag.
+
+```{r analysis-ok}
+d <- d |>
+  mutate(has_choice  = !is.na(misleading),
+         analysis_ok = consent_ok & is_real & !is.na(condition) &
+                       passed_comprehension & has_choice &
+                       !ai_excluded & !is_duplicate)
+
+tibble(
+  step = c("recruited", "real (finished, non-preview)", "consented",
+           "randomized to a condition", "passed comprehension",
+           "made a valid choice", "not an AI disclosure", "not a duplicate"),
+  remaining = c(
+    nrow(d),
+    sum(d$is_real),
+    sum(d$is_real & d$consent_ok),
+    sum(d$is_real & d$consent_ok & !is.na(d$condition)),
+    sum(d$is_real & d$consent_ok & !is.na(d$condition) & d$passed_comprehension),
+    sum(d$is_real & d$consent_ok & !is.na(d$condition) & d$passed_comprehension & d$has_choice),
+    sum(d$is_real & d$consent_ok & !is.na(d$condition) & d$passed_comprehension & d$has_choice & !d$ai_excluded),
+    sum(d$analysis_ok))) |>
+  mutate(excluded_here = lag(remaining) - remaining)
+```
+
+# Integrity checks
+
+```{r integrity}
+elig <- d |> filter(analysis_ok)
+cat("ANALYSIS-ELIGIBLE:", nrow(elig), "\n\n")
+cat("condition balance:\n");           print(count(elig, condition))
+cat("\nrating/bonus order balance:\n"); print(count(elig, rating_bonus_order))
+cat("\nunclassified choices (eligible):", sum(elig$choice == "unclassified", na.rm = TRUE), "\n")
+cat("choice/condition contamination:",
+    sum((elig$condition == "palter" & elig$choice == "lie") |
+        (elig$condition == "lie"    & elig$choice == "palter"), na.rm = TRUE), "\n")
+```
+
+# Save the full flagged dataset
+
+Select the analysis contract, the eligibility/exclusion flags, both
+free-text responses, and the quality-check variables — keeping **all
+rows** (incompletes, screen-outs, and duplicates included; they are
+flagged, not removed). **No `PROLIFIC_PID`/`prolific_id`.** `02` creates
+the analysis samples from the flags.
+
+```{r save}
+data_clean <- d |>
+  select(response_id,
+         condition, condition_num,
+         choice, misleading,
+         deceptive, honest, ethical, decep_rev, ethics_index,
+         comp1_ok, comp2_ok, passed_comprehension,
+         mem_misleading, mem_honest, mem_misleading_correct, mem_honest_correct,
+         bonus_draw, bonus_earned,
+         text_order, rating_bonus_order,
+         age, gender,
+         strategy, ai_text,                                   # free-text responses
+         recaptcha, qualtrics_dup_flag,                       # quality / fraud checks
+         consent_ok, is_real, ai_flagged, ai_excluded, is_duplicate, duration,
+         analysis_ok)
+
+## guards
+stopifnot(!any(c("prolific_id", "PROLIFIC_PID") %in% names(data_clean)))
+required <- c("misleading","condition","condition_num","ethics_index",
+              "honest","ethical","deceptive","decep_rev","rating_bonus_order",
+              "mem_misleading_correct","mem_honest_correct","bonus_earned",
+              "analysis_ok","age","gender")
+stopifnot(all(required %in% names(data_clean)))
+
+saveRDS(data_clean, out_path)
+cat("Saved ALL", nrow(data_clean), "rows to", out_path, "(no PROLIFIC_PID);",
+    sum(data_clean$analysis_ok), "flagged analysis-eligible,",
+    nrow(data_clean) - sum(data_clean$analysis_ok), "flagged out (retained, not dropped).\n")
+```
+
+# Reproducibility
+
+```{r session, echo=FALSE}
+sessionInfo()
+```

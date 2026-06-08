@@ -1,0 +1,343 @@
+---
+title: "A Priori Power Analysis: Rogers et al. (2017) Study 1 Close Replication"
+author: "Ke Fang"
+date: "2026-06-04"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+    code_folding: show
+    theme: flatly
+    df_print: kable
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+library(pwr)
+
+GLOBAL_SEED   <- 42
+set.seed(GLOBAL_SEED)
+
+alpha         <- 0.05
+target_powers <- c(0.80, 0.90, 0.95)
+```
+
+# Overview
+
+A close replication of Rogers, Zeckhauser, Gino, Norton & Schweitzer (2017),
+Study 1 ("Artful Paltering", *JPSP* 112(3), 456–473). We power the three tests
+the authors actually used:
+
+1. **Choice rate** — proportion choosing to mislead, palter vs. lie-by-commission.
+   Reported as a χ²(1) on the 2×2 table, which is algebraically the two-proportion
+   *z* test, so we power the proportion difference directly. Original: 71% (palter)
+   vs. 55% (lie), χ²(1) = 14.58, *p* < .001.
+2. **Ethicality index** — independent-samples *t* test. Original: *M* = 4.05
+   (*SD* 1.36) vs. *M* = 2.12 (*SD* 1.42); Cohen's *d* = 1.39.
+3. **Mediation** — condition → ethicality → choice with a *binary* outcome
+   (logistic *b*-path), indirect effect via a Preacher & Hayes bootstrap. Original
+   logit model: *b*-path (ethicality → choice) = 0.455 (*SE* .077); *c′*-path
+   (direct condition → choice) = 0.16 (*SE* .269, *n.s.*).
+
+Tests 1 and 2 use closed-form power (`pwr` / base R). Test 3 uses Monte Carlo
+simulation, because the outcome is binary and the indirect effect is non-normal:
+we scan *N* with the joint-significance test (a fast, well-validated proxy for
+bootstrap power; MacKinnon et al. 2002; Fritz & MacKinnon 2007) and confirm at the
+chosen *N* with the actual nonparametric bootstrap of *a·b*. Two-sided, α = .05
+throughout, matching the original.
+
+# Effect-size inputs
+
+Taken directly from the published paper.
+
+```{r inputs}
+## Test 1: proportion choosing the MISLEADING option, by condition
+p_palter <- 0.71      # Palter condition
+p_lie    <- 0.55      # Lie-by-Commission condition
+
+## Test 2: ethicality index (1-7 scale), by condition
+m_palter <- 4.05; sd_palter <- 1.36
+m_lie    <- 2.12; sd_lie    <- 1.42
+
+## Test 3: mediation path estimates (condition coded Palter = 1, Lie = 0)
+a_path      <- m_palter - m_lie   # condition -> ethicality (OLS slope) = 1.93
+b_path      <- 0.455              # ethicality -> choice (logit), reported
+cprime_path <- 0.16               # direct condition -> choice (logit), n.s.
+```
+
+# Test 1 — Choice-rate difference
+
+The χ²(1) on the 2×2 is the two-proportion *z* test, so we power the proportion
+comparison. Three convergent methods, plus a cross-check against the reported χ².
+
+```{r test1}
+## Method A: Cohen's h (the standard ES for two independent proportions)
+h <- ES.h(p_palter, p_lie)                       # 2*asin(sqrt p1) - 2*asin(sqrt p2)
+n_arcsine <- sapply(target_powers, function(pw)
+  ceiling(pwr.2p.test(h = h, sig.level = alpha, power = pw,
+                      alternative = "two.sided")$n))
+
+## Method B: base R, exact binomial-variance normal approximation
+n_baseR <- sapply(target_powers, function(pw)
+  ceiling(power.prop.test(p1 = p_palter, p2 = p_lie, sig.level = alpha,
+                          power = pw, alternative = "two.sided")$n))
+
+## Method C: chi-square effect size w on the 2x2 (what they reported).
+## Build the 2x2 JOINT probability table assuming equal allocation (0.5/0.5).
+joint <- matrix(c(0.5 * p_palter, 0.5 * (1 - p_palter),    # Palter row
+                  0.5 * p_lie,    0.5 * (1 - p_lie)),       # Lie row
+                nrow = 2, byrow = TRUE,
+                dimnames = list(c("Palter", "Lie"),
+                                c("Mislead", "Truth")))
+w <- ES.w2(joint)                                # Cohen's w for a 2-way table
+N_chisq_total <- sapply(target_powers, function(pw)
+  ceiling(pwr.chisq.test(w = w, df = 1, sig.level = alpha, power = pw)$N))
+
+cat(sprintf("Cohen's h = %.3f ;  Cohen's w (from proportions) = %.3f\n", h, w))
+
+test1 <- data.frame(
+  power               = target_powers,
+  n_per_group_arcsine = n_arcsine,
+  n_per_group_baseR   = n_baseR,
+  N_total_baseR       = 2 * n_baseR,
+  N_total_chisq       = N_chisq_total          # should match 2 * n_per_group
+)
+test1
+```
+
+As a cross-check, the effect size implied by the *reported* χ²(1) = 14.58 at
+*N* = 550 (rather than recomputed from the rounded proportions):
+
+```{r test1-chisq-crosscheck}
+w_from_chisq <- sqrt(14.58 / 550)
+cat(sprintf("Cohen's w from reported chi2/N = %.3f\n", w_from_chisq))
+data.frame(
+  power   = target_powers,
+  N_total = sapply(target_powers, function(pw)
+    ceiling(pwr.chisq.test(w = w_from_chisq, df = 1, sig.level = alpha, power = pw)$N))
+)
+```
+
+The two routes to *w* agree closely (≈ 0.166 from the proportions, ≈ 0.163 from
+χ²/N); they imply ~286 vs. ~296 total at 80% power. The discrepancy is just
+rounding — the published 0.71/0.55 in a balanced *N* = 550 table imply χ² ≈ 15.10,
+not 14.58. We treat the proportion-based figure as primary for transparency.
+
+# Test 2 — Ethicality index (between-subjects *t* test)
+
+```{r test2}
+## Recompute Cohen's d from the reported Ms/SDs (pooled SD, equal n assumed)
+sd_pooled <- sqrt((sd_palter^2 + sd_lie^2) / 2)
+d         <- (m_palter - m_lie) / sd_pooled
+cat(sprintf("Pooled SD = %.3f ;  Cohen's d = %.3f\n", sd_pooled, d))
+
+n_t <- sapply(target_powers, function(pw)
+  ceiling(pwr.t.test(d = d, sig.level = alpha, power = pw,
+                     type = "two.sample", alternative = "two.sided")$n))
+
+test2 <- data.frame(power = target_powers, n_per_group = n_t, N_total = 2 * n_t)
+test2
+```
+
+The ethicality effect is enormous (*d* ≈ 1.4), so this test needs only a handful
+per cell and never binds the design.
+
+# Test 3 — Mediation (binary outcome, simulation)
+
+Generative model (condition *X*: Lie = 0, Palter = 1):
+
+$$M \mid X \sim \text{Normal}(b_{0M} + a\,X,\ \sigma_M), \qquad
+  Y \mid X,M \sim \text{Bernoulli}\!\big(\text{logit}^{-1}(b_{0Y} + b\,M + c'X)\big).$$
+
+We take *a*, σ_M, *b*, and *c′* from the paper and solve *b₀Y* so the model
+reproduces the observed overall mislead rate (~0.63). Because logistic
+coefficients are non-collapsible, the model-implied per-condition rates are *close
+to* but not exactly 0.71 / 0.55 — expected and harmless for power, which depends
+on a realistic *a*-path, *b*-path, and *Y* base rate. The script prints the
+implied rates as a sanity check.
+
+```{r test3-model}
+pars <- list(a = a_path, b = b_path, cprime = cprime_path,
+             b0M = m_lie, sdM = sd_pooled, b0Y = NA_real_)
+
+## Solve b0Y to match the overall mislead rate, integrating M out with a fixed
+## (deterministic) standard-normal grid so uniroot sees a smooth function.
+solve_b0Y <- function(target_overall, p, n_quad = 1e5) {
+  z <- qnorm(ppoints(n_quad))               # deterministic, symmetric grid
+  x <- rep(0:1, each = n_quad / 2)
+  m <- p$b0M + p$a * x + p$sdM * z
+  f <- function(b0Y) mean(plogis(b0Y + p$b * m + p$cprime * x)) - target_overall
+  uniroot(f, interval = c(-50, 50))$root
+}
+overall_rate <- (p_palter + p_lie) / 2       # = 0.63
+pars$b0Y <- solve_b0Y(overall_rate, pars)
+cat(sprintf("Solved intercept b0Y = %.3f\n", pars$b0Y))
+
+## Sanity check: model-implied P(mislead) by condition
+implied_by_condition <- function(p, n = 2e5) {
+  x  <- rep(0:1, each = n / 2)
+  m  <- rnorm(n, p$b0M + p$a * x, p$sdM)
+  pr <- plogis(p$b0Y + p$b * m + p$cprime * x)
+  setNames(tapply(pr, x, mean), c("Lie(X=0)", "Palter(X=1)"))
+}
+cat("Model-implied mislead rates (target 0.55 / 0.71):\n")
+print(round(implied_by_condition(pars), 3))
+```
+
+The simulation and estimation helpers: one dataset, its analysis (*a*-path by OLS,
+*b*-path by logistic regression, indirect = *a·b*), and the two power routines
+(joint-significance and the nonparametric bootstrap of *a·b*).
+
+```{r test3-functions}
+## One simulated dataset
+simulate_one <- function(n_per_group, p) {
+  X  <- rep(0:1, each = n_per_group)               # 0 = Lie, 1 = Palter
+  M  <- rnorm(2 * n_per_group, p$b0M + p$a * X, p$sdM)
+  pr <- plogis(p$b0Y + p$b * M + p$cprime * X)
+  Y  <- rbinom(2 * n_per_group, 1, pr)
+  data.frame(X = X, M = M, Y = Y)
+}
+
+## Analyze one dataset: a-path (OLS), b-path (logistic), indirect = a*b
+analyze_one <- function(dat) {
+  fa    <- lm(M ~ X, data = dat)
+  a_hat <- unname(coef(fa)["X"])
+  a_p   <- summary(fa)$coefficients["X", "Pr(>|t|)"]
+  fb    <- glm(Y ~ X + M, family = binomial, data = dat)
+  cb    <- coef(summary(fb))
+  b_hat <- unname(coef(fb)["M"])
+  b_p   <- cb["M", "Pr(>|z|)"]
+  list(indirect  = a_hat * b_hat,
+       joint_sig = (a_p < alpha) && (b_p < alpha))
+}
+
+## Power via JOINT SIGNIFICANCE (fast scan)
+power_med_joint <- function(n_per_group, nSim, p) {
+  hits <- replicate(nSim, {
+    d <- simulate_one(n_per_group, p)
+    tryCatch(analyze_one(d)$joint_sig, error = function(e) NA)
+  })
+  mean(hits, na.rm = TRUE)
+}
+
+## Power via NONPARAMETRIC BOOTSTRAP of a*b (faithful confirmation)
+boot_indirect_ci <- function(dat, B = 999, conf = 0.95) {
+  n   <- nrow(dat)
+  ind <- numeric(B)
+  for (j in seq_len(B)) {
+    db <- dat[sample.int(n, n, replace = TRUE), ]
+    ind[j] <- tryCatch({
+      a  <- coef(lm(M ~ X, db))["X"]
+      bb <- coef(glm(Y ~ X + M, family = binomial, db))["M"]
+      a * bb
+    }, error = function(e) NA_real_)
+  }
+  quantile(ind, c((1 - conf) / 2, 1 - (1 - conf) / 2), na.rm = TRUE)
+}
+power_med_boot <- function(n_per_group, nSim, p, B = 999) {
+  hits <- replicate(nSim, {
+    d  <- simulate_one(n_per_group, p)
+    ci <- tryCatch(boot_indirect_ci(d, B = B), error = function(e) c(NA, NA))
+    !any(is.na(ci)) && (ci[1] > 0 || ci[2] < 0)     # CI excludes zero
+  })
+  mean(hits)
+}
+```
+
+Scan *N* per cell with the joint-significance proxy:
+
+```{r test3-scan}
+nSim_scan <- 1000
+grid      <- c(15, 20, 25, 30, 40, 50, 75, 100)
+set.seed(GLOBAL_SEED)
+joint_power <- sapply(grid, function(n) power_med_joint(n, nSim_scan, pars))
+test3_scan  <- data.frame(n_per_group = grid,
+                          N_total     = 2 * grid,
+                          joint_power = round(joint_power, 3))
+test3_scan
+```
+
+```{r test3-targets}
+## Smallest n/group reaching each target (NA if the grid never reaches it)
+n_med <- sapply(target_powers, function(pw) {
+  ok <- which(joint_power >= pw)
+  if (length(ok)) grid[ok[1]] else NA_integer_
+})
+data.frame(power = target_powers, n_per_group = n_med)
+```
+
+Confirm the 80%-power point with the actual nonparametric bootstrap of *a·b*.
+(Slow: `nSim_conf` × `B_conf` logistic fits; dial down for a quick check, or
+parallelize with `parallel::mclapply` / `future.apply`.)
+
+```{r test3-boot-confirm}
+n_star    <- n_med[1]                 # 80%-power n/group from the scan
+nSim_conf <- 200
+B_conf    <- 999
+if (!is.na(n_star)) {
+  set.seed(GLOBAL_SEED)
+  boot_pw <- power_med_boot(n_star, nSim = nSim_conf, p = pars, B = B_conf)
+  cat(sprintf("Bootstrap-confirmed power at n = %d/group: %.3f (nSim=%d, B=%d)\n",
+              n_star, boot_pw, nSim_conf, B_conf))
+}
+```
+
+The mediation saturates at a small *N* and never binds the design.
+
+# Synthesis — binding constraint and recruitment target
+
+Required *completers* per cell = the largest requirement across the three tests.
+
+```{r synthesis}
+req <- data.frame(
+  power            = target_powers,
+  test1_proportion = n_baseR,           # binding
+  test2_ttest      = n_t,
+  test3_mediation  = n_med
+)
+req$binding_n_per_group <- apply(req[, c("test1_proportion", "test2_ttest",
+                                         "test3_mediation")], 1,
+                                 function(r) max(r, na.rm = TRUE))
+req$binding_N_total <- 2 * req$binding_n_per_group
+req
+```
+
+
+Test 1 (the proportion difference) is the binding constraint; Tests 2 and 3 are
+satisfied many times over. We adopt **90% power** as the floor: the corresponding
+`binding_N_total` row is the completer target, and `N_recruit` is what to launch
+after inflating for ~15% exclusions.
+
+# Sensitivity (Test 1) — a smaller-than-original effect
+
+The proportion test is the most exposed if the true effect is smaller than the
+original — for instance if this sample or platform yields a narrower palter–lie
+gap. This shows how *N* grows as the true palter rate falls toward the lie rate
+(held at 0.55).
+
+```{r sensitivity}
+p_palter_grid <- seq(0.71, 0.62, by = -0.01)
+sens <- data.frame(
+  p_palter     = p_palter_grid,
+  diff_vs_lie  = round(p_palter_grid - p_lie, 2),
+  cohens_h     = round(sapply(p_palter_grid, function(pp) ES.h(pp, p_lie)), 3),
+  n_per_grp_80 = sapply(p_palter_grid, function(pp)
+    ceiling(power.prop.test(p1 = pp, p2 = p_lie, power = 0.80, sig.level = alpha)$n)),
+  n_per_grp_90 = sapply(p_palter_grid, function(pp)
+    ceiling(power.prop.test(p1 = pp, p2 = p_lie, power = 0.90, sig.level = alpha)$n))
+)
+sens$N_total_80 <- 2 * sens$n_per_grp_80
+sens$N_total_90 <- 2 * sens$n_per_grp_90
+sens
+```
+
+A modest shrinkage in the palter rate inflates the requirement steeply — which is
+why powering for 90% (rather than 80%) on the original effect buys a useful buffer
+against a smaller true effect.
+
+# Reproducibility
+
+```{r session, echo=FALSE}
+sessionInfo()
+```

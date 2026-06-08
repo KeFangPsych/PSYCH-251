@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.27">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Ke Fang fangke@stanford.edu">
+<meta name="dcterms.date" content="2026-06-08">
+
+<title>Replication of the Preference for Paltering (Study 1) of Rogers, Zeckhauser, Gino, Norton &amp; Schweitzer (2017, Journal of Personality and Social Psychology)</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="ReplicationReport_files/libs/clipboard/clipboard.min.js"></script>
+<script src="ReplicationReport_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="ReplicationReport_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="ReplicationReport_files/libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="ReplicationReport_files/libs/quarto-html/popper.min.js"></script>
+<script src="ReplicationReport_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="ReplicationReport_files/libs/quarto-html/anchor.min.js"></script>
+<link href="ReplicationReport_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="ReplicationReport_files/libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="ReplicationReport_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="ReplicationReport_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="ReplicationReport_files/libs/bootstrap/bootstrap-6a8e6d95bfcd174082ff54166b04dcf7.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#methods" id="toc-methods" class="nav-link" data-scroll-target="#methods">Methods</a>
+  <ul class="collapse">
+  <li><a href="#power-analysis" id="toc-power-analysis" class="nav-link" data-scroll-target="#power-analysis">Power Analysis</a></li>
+  <li><a href="#planned-sample" id="toc-planned-sample" class="nav-link" data-scroll-target="#planned-sample">Planned Sample</a></li>
+  <li><a href="#materials" id="toc-materials" class="nav-link" data-scroll-target="#materials">Materials</a></li>
+  <li><a href="#procedure" id="toc-procedure" class="nav-link" data-scroll-target="#procedure">Procedure</a></li>
+  <li><a href="#analysis-plan" id="toc-analysis-plan" class="nav-link" data-scroll-target="#analysis-plan">Analysis Plan</a></li>
+  <li><a href="#differences-from-original-study" id="toc-differences-from-original-study" class="nav-link" data-scroll-target="#differences-from-original-study">Differences from Original Study</a></li>
+  <li><a href="#methods-addendum-post-data-collection" id="toc-methods-addendum-post-data-collection" class="nav-link" data-scroll-target="#methods-addendum-post-data-collection">Methods Addendum (Post Data Collection)</a></li>
+  </ul></li>
+  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results">Results</a>
+  <ul class="collapse">
+  <li><a href="#data-preparation" id="toc-data-preparation" class="nav-link" data-scroll-target="#data-preparation">Data preparation</a></li>
+  <li><a href="#confirmatory-analysis" id="toc-confirmatory-analysis" class="nav-link" data-scroll-target="#confirmatory-analysis">Confirmatory analysis</a></li>
+  <li><a href="#exploratory-analyses" id="toc-exploratory-analyses" class="nav-link" data-scroll-target="#exploratory-analyses">Exploratory analyses</a></li>
+  </ul></li>
+  <li><a href="#discussion" id="toc-discussion" class="nav-link" data-scroll-target="#discussion">Discussion</a>
+  <ul class="collapse">
+  <li><a href="#summary-of-replication-attempt" id="toc-summary-of-replication-attempt" class="nav-link" data-scroll-target="#summary-of-replication-attempt">Summary of Replication Attempt</a></li>
+  <li><a href="#commentary" id="toc-commentary" class="nav-link" data-scroll-target="#commentary">Commentary</a></li>
+  </ul></li>
+  </ul>
+</nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Replication of the Preference for Paltering (Study 1) of Rogers, Zeckhauser, Gino, Norton &amp; Schweitzer (2017, Journal of Personality and Social Psychology)</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Ke Fang fangke@stanford.edu </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">June 8, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<!-- Replication reports should all use this template to standardize reporting across projects.  These reports will be public supplementary materials that accompany the summary report(s) of the aggregate results. -->
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
+<p>Rogers, Zeckhauser, Gino, Norton, and Schweitzer (2017) introduced <em>paltering</em> — the active use of truthful statements to create a misleading impression — as a distinct form of deception, sitting between lying by omission (passive) and lying by commission (active and false). The central question of their Study 1 was whether people prefer to palter rather than lie outright, even when outright lying is more profitable. Participants played the seller’s role in an incentivized used-car negotiation in which a problem with the car was common knowledge to the seller. They chose between honestly disclosing the problem and sending a misleading reply. The misleading reply was a palter (truthful but misleading) in one condition and an outright lie (lie by commission) in the other. Crucially, the lie was made <em>more</em> lucrative than the palter — it carried a higher stated probability of completing the sale, which will reward the participants with $1 more, so that choosing the lying outright less often than paltering reveals a willingness to sacrifice expected value in order to maintain self-image.</p>
+<p>The target findings selected for replication were the three reported in Study 1. First (the key analysis of interest, H1), a larger proportion of participants chose to mislead when the misleading option was a palter than when it was an outright lie. Second (H2), participants judged the palter option to be more ethical than the lie option. Third, the effect of condition on the choice to mislead was mediated by these ethicality perceptions.</p>
+</section>
+<section id="methods" class="level2">
+<h2 class="anchored" data-anchor-id="methods">Methods</h2>
+<section id="power-analysis" class="level3">
+<h3 class="anchored" data-anchor-id="power-analysis">Power Analysis</h3>
+<p>The binding test is the choice-rate difference (H1). The original proportions (71% palter vs.&nbsp;55% lie) correspond to Cohen’s <em>h</em> = 0.333. A closed-form power analysis for the two-proportion comparison (confirmed by three convergent methods: arcsine <code>pwr.2p.test</code>, base-R <code>power.prop.test</code>, and a χ² effect-size route on the 2×2) required <strong>142, 190, and 234 completers per cell</strong> for 80%, 90%, and 95% power, respectively (284 / 380 / 468 total). The ethicality <em>t</em> test (<em>d</em> ≈ 1.39) needs only ~10–15 per cell, and the mediation — powered by Monte Carlo simulation, with the joint-significance scan confirmed against a nonparametric bootstrap of <em>a·b</em> — saturates well below the H1 requirement (~75 per cell). H1 therefore drives the design. A sensitivity analysis showed the requirement climbs steeply if the true effect is smaller than the original (e.g., ~503 per cell at 90% if the palter rate were 0.65). Balancing this against feasibility on Prolific, we powered for 90% (the more conservative floor given the sensitivity result), giving a target of <strong>380 completers</strong>.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Power</th>
+<th>Choice rate — H1 (binding)</th>
+<th>Ethicality — H2</th>
+<th>Mediation</th>
+<th><strong>Total target</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>80%</td>
+<td>142 / cell</td>
+<td>~10 / cell</td>
+<td>~75 / cell</td>
+<td>284</td>
+</tr>
+<tr class="even">
+<td><strong>90%</strong></td>
+<td><strong>190 / cell</strong></td>
+<td><strong>~12 / cell</strong></td>
+<td><strong>~75 / cell</strong></td>
+<td><strong>380</strong></td>
+</tr>
+<tr class="odd">
+<td>95%</td>
+<td>234 / cell</td>
+<td>~15 / cell</td>
+<td>~75 / cell</td>
+<td>468</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="planned-sample" class="level3">
+<h3 class="anchored" data-anchor-id="planned-sample">Planned Sample</h3>
+<p>Planned sample: n = 380 eligible completers (90% power for the original H1 effect). We recruited online via Prolific (launch target ~448 participants) and used a fixed recruitment target as the termination rule (collect to the recruited <em>n</em>, then close). The sampling frame was Prolific’s US adult, English-fluent participant pool, with balanced random assignment to the two conditions. The only preselection rule was a comprehension screen administered before the dependent measure (see Procedure); participants who failed were routed out and not asked to make a choice.</p>
+</section>
+<section id="materials" class="level3">
+<h3 class="anchored" data-anchor-id="materials">Materials</h3>
+<p>Materials were reproduced verbatim from Rogers et al.&nbsp;(2017, Study 1) and implemented in Qualtrics; the full text appears in the original article, its supplement, and our shared survey file. In paraphrase: participants read a scenario in which they were selling a used car with a known starting problem in cold weather (the car had previously needed mechanic repairs to start, including at low temperatures), and received a prospective buyer’s email asking specifically about cold-weather performance. They then chose between three pre-written replies (the two relevant to their condition were shown): an honest disclosure that stated the car had needed a mechanic’s repairs to start; a <em>palter</em>, a truthful-but-misleading statement emphasizing how smoothly the car drives and that it recently started in very cold weather; and an outright lie, “This car has never had problems.” Each reply carried a stated probability of completing the sale — 30% (honest), 60% (palter), 80% (lie) — and a real $1.00 bonus was paid out by lottery conditioned on the chosen reply’s probability, exactly as in the original. After choosing, participants rated the misleading option they had been offered on three 7-point items (deceptive, honest, ethical), matching the original Study 1 measure.</p>
+<p>Verbatim, the buyer asked “Has this car ever had problems?”, and the reply options were followed precisely:</p>
+<blockquote class="blockquote">
+<p><strong>Honest disclosure (both conditions):</strong> “Twice in the last year this car would not start and both times I had to have a mechanic fix it.” <strong>Lie by commission:</strong> “This car has never had problems.” <strong>Palter:</strong> “This car drives very smoothly and is very responsive. Just last week it started up with no problems when the temperature was −5 degrees Fahrenheit.”</p>
+</blockquote>
+</section>
+<section id="procedure" class="level3">
+<h3 class="anchored" data-anchor-id="procedure">Procedure</h3>
+<p>We followed the original procedure. Participants were randomly assigned to the palter or lie-by-commission condition, read the scenario, and completed a two-item comprehension check (the seller’s goal; which statement was <em>not</em> true of the car); only those who passed both items continued to the choice. They then made the incentivized choice between the honest disclosure and the condition’s misleading reply, rated that misleading reply on the deceptive/honest/ethical items, and had the bonus lottery resolved. Finally they answered a probability-memory check, an open-ended question about their reasoning, an explicit AI-use disclosure item, and demographics. Two procedural elements were counterbalanced (see Differences): the on-screen order of the two reply options, and the order of the rating block versus the bonus block.</p>
+</section>
+<section id="analysis-plan" class="level3">
+<h3 class="anchored" data-anchor-id="analysis-plan">Analysis Plan</h3>
+<p>The analysis follows the original as closely as the modern toolchain allows, on the analysis-eligible sample (below). <strong>The key analysis of interest is H1.</strong></p>
+<ul>
+<li><strong>H1 (choice rate, confirmatory):</strong> the difference in the proportion choosing to mislead, palter vs.&nbsp;lie, tested with a Pearson χ²(1) on the 2×2 table (equivalently the two-proportion <em>z</em> test), reported with Cohen’s <em>h</em>, the odds ratio, and a 95% CI on the proportion difference. Support requires <em>p</em> &lt; .05 with the palter rate exceeding the lie rate.</li>
+<li><strong>H2 (ethicality, confirmatory):</strong> an ethicality index computed as the mean of the honest and ethical items and the reverse-coded deceptive item, compared between conditions with a Welch <em>t</em> test (Cohen’s <em>d</em>). Reliability is assessed with Cronbach’s α (overall and by condition); if overall α &lt; .70, the index is replaced by three item-level single-mediator models (Bonferroni-corrected).</li>
+<li><strong>Mediation:</strong> condition → ethicality → choice, with the binary choice declared <code>ordered</code> and fit by WLSMV (probit). The indirect effect is tested two ways, as in the original’s spirit: a Monte Carlo confidence interval (primary) and a bias-corrected (BCa) bootstrap (the analog of the original’s Sobel–Goodman bootstrap). Because the probit coefficients are not on the original’s logit scale, the replication target is the <em>sign and significance</em> of the indirect effect, not its magnitude.</li>
+<li><strong>Exclusions / data cleaning:</strong> non-finishers; comprehension-check failures (routed out before the DV); participants who explicitly disclosed AI use (keyword-flagged, then manually reviewed so that denials are retained); and duplicate Prolific IDs (retaining the first complete eligible response). reCAPTCHA scores and Qualtrics’ fingerprint duplicate flag are retained for inspection but, because they are not part of the original exclusion criteria, are not used to define the confirmatory sample (they are examined in an exploratory robustness check).</li>
+</ul>
+</section>
+<section id="differences-from-original-study" class="level3">
+<h3 class="anchored" data-anchor-id="differences-from-original-study">Differences from Original Study</h3>
+<p>The core manipulation, stimuli, incentive structure, and dependent measures were preserved. Known differences:</p>
+<ul>
+<li><strong>Sample and setting.</strong> Recruited via Prolific in 2026, rather than the original’s sample. Online, incentivized, single session in both cases.</li>
+<li><strong>Comprehension gate.</strong> Failures are routed out <em>before</em> the choice, so screen-outs contribute no DV data. This improves data quality but means an “unscreened” H1 is not directly recoverable; we judged the quality benefit worth this deviation.</li>
+<li><strong>Counterbalancing added.</strong> The two reply options were presented in randomized order, and the rating block and bonus-lottery block were presented in randomized order. The ratings-first arm matches the original’s fixed order; the bonus-first arm is novel and is examined as an exploratory order effect.</li>
+<li><strong>Deceptiveness anchoring.</strong> In the original raw instrument the deceptiveness item was anchored inconsistently across conditions; we anchored it uniformly (1→7) and reverse-coded it uniformly in analysis.</li>
+<li><strong>Mediation estimator.</strong> We used lavaan WLSMV/probit for the categorical-outcome mediation rather than the original’s logistic Sobel–Goodman bootstrap, and target the sign/significance of the indirect effect.</li>
+</ul>
+<p>None of these differences is anticipated to eliminate the effect; the original article’s logic does not hinge on the sample source, presentation order, or estimator, and the manipulation itself is unchanged.</p>
+</section>
+<section id="methods-addendum-post-data-collection" class="level3">
+<h3 class="anchored" data-anchor-id="methods-addendum-post-data-collection">Methods Addendum (Post Data Collection)</h3>
+<section id="actual-sample" class="level4">
+<h4 class="anchored" data-anchor-id="actual-sample">Actual Sample</h4>
+<p>Prolific recorded <strong>415 responses</strong> (launch target ~448). Of these, 396 finished the survey and 380 also passed the two-item comprehension screen and made a choice; excluding 4 participants who explicitly disclosed AI use left <strong>376 analysis-eligible</strong> participants (lie <em>n</em> = 188, palter <em>n</em> = 188), with the conditions and the rating/bonus order balanced. The full attrition was: 19 non-finishers, 16 comprehension failures, and 4 explicit AI-use disclosures (the 11 flagged duplicate Prolific IDs had already been excluded by other criteria). Demographics (eligible sample): age 19–79 (median 45); gender 189 female, 181 male, 5 non-binary/third gender, 1 self-described.</p>
+</section>
+<section id="differences-from-pre-data-collection-methods-plan" class="level4">
+<h4 class="anchored" data-anchor-id="differences-from-pre-data-collection-methods-plan">Differences from pre-data collection methods plan</h4>
+<p>None of substance. AI keyword flags were resolved by the preregistered manual review (emphatic denials retained, only affirmative disclosures excluded), exactly as planned.</p>
+</section>
+</section>
+</section>
+<section id="results" class="level2">
+<h2 class="anchored" data-anchor-id="results">Results</h2>
+<section id="data-preparation" class="level3">
+<h3 class="anchored" data-anchor-id="data-preparation">Data preparation</h3>
+<p>Data preparation followed the analysis plan (full pipeline in <code>script/01_clean.Rmd</code>): we imported the Qualtrics export keyed by stable question IDs, marked duplicate Prolific IDs and then discarded the identifier to de-identify the file, parsed the 7-point ratings (the choice-text export encodes the scale endpoints as text labels, which we converted back to integers so the strongest responses were not lost), reverse-coded deceptiveness and formed the ethicality index, scored the comprehension and probability-memory items, flagged AI disclosures and duplicates, and defined the eligibility flag. The cleaned file retains every response (incompletes and duplicates included, flagged rather than dropped); the confirmatory sample is the subset with <code>analysis_ok == TRUE</code>.</p>
+</section>
+<section id="confirmatory-analysis" class="level3">
+<h3 class="anchored" data-anchor-id="confirmatory-analysis">Confirmatory analysis</h3>
+<p>The analyses specified in the analysis plan, on the preregistered sample (<em>N</em> = 376).</p>
+<p><strong>H1 — choice rate.</strong> More participants chose to mislead when the misleading option was a palter (61.7%) than when it was an outright lie (26.6%) — a 35.1-percentage-point difference, 95% CI [25.7, 44.5], Cohen’s <em>h</em> = 0.72, odds ratio = 4.45 [2.87, 6.89], χ²(1) = 47.0, <em>p</em> &lt; .001. The original reported 71% vs.&nbsp;55%, χ²(1) = 14.58, <em>p</em> &lt; .001. The effect replicated in the predicted direction and was, if anything, larger.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>tab <span class="ot">&lt;-</span> <span class="fu">table</span>(prereg<span class="sc">$</span>condition, <span class="fu">factor</span>(prereg<span class="sc">$</span>misleading, <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>)))</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">chisq.test</span>(tab, <span class="at">correct =</span> <span class="cn">FALSE</span>)                       <span class="co"># Pearson chi-square (no Yates)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Pearson's Chi-squared test
+
+data:  tab
+X-squared = 46.984, df = 1, p-value = 7.158e-12</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">prop.test</span>(<span class="fu">c</span>(tab[<span class="st">"palter"</span>, <span class="st">"1"</span>], tab[<span class="st">"lie"</span>, <span class="st">"1"</span>]),      <span class="co"># proportion difference + 95% CI</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>          <span class="fu">c</span>(<span class="fu">sum</span>(tab[<span class="st">"palter"</span>, ]), <span class="fu">sum</span>(tab[<span class="st">"lie"</span>, ])), <span class="at">correct =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    2-sample test for equality of proportions without continuity correction
+
+data:  c(tab["palter", "1"], tab["lie", "1"]) out of c(sum(tab["palter", ]), sum(tab["lie", ]))
+X-squared = 46.984, df = 1, p-value = 7.158e-12
+alternative hypothesis: two.sided
+95 percent confidence interval:
+ 0.2571619 0.4449658
+sample estimates:
+   prop 1    prop 2 
+0.6170213 0.2659574 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Cohen's h and the odds ratio (Haldane-corrected if a zero cell), as in 02_analysis.Rmd</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> <span class="fu">mean</span>(prereg<span class="sc">$</span>misleading[prereg<span class="sc">$</span>condition <span class="sc">==</span> <span class="st">"palter"</span>])</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> <span class="fu">mean</span>(prereg<span class="sc">$</span>misleading[prereg<span class="sc">$</span>condition <span class="sc">==</span> <span class="st">"lie"</span>])</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>or_tab <span class="ot">&lt;-</span> <span class="cf">if</span> (<span class="fu">any</span>(tab <span class="sc">==</span> <span class="dv">0</span>)) tab <span class="sc">+</span> <span class="fl">0.5</span> <span class="cf">else</span> tab</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>OR <span class="ot">&lt;-</span> (or_tab[<span class="st">"palter"</span>, <span class="st">"1"</span>] <span class="sc">*</span> or_tab[<span class="st">"lie"</span>, <span class="st">"0"</span>]) <span class="sc">/</span> (or_tab[<span class="st">"palter"</span>, <span class="st">"0"</span>] <span class="sc">*</span> or_tab[<span class="st">"lie"</span>, <span class="st">"1"</span>])</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>se <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">sum</span>(<span class="dv">1</span> <span class="sc">/</span> or_tab))</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">c</span>(<span class="at">cohens_h =</span> <span class="dv">2</span> <span class="sc">*</span> <span class="fu">asin</span>(<span class="fu">sqrt</span>(p1)) <span class="sc">-</span> <span class="dv">2</span> <span class="sc">*</span> <span class="fu">asin</span>(<span class="fu">sqrt</span>(p2)),</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">OR =</span> OR, <span class="at">OR_lo =</span> <span class="fu">exp</span>(<span class="fu">log</span>(OR) <span class="sc">-</span> <span class="fl">1.96</span> <span class="sc">*</span> se), <span class="at">OR_hi =</span> <span class="fu">exp</span>(<span class="fu">log</span>(OR) <span class="sc">+</span> <span class="fl">1.96</span> <span class="sc">*</span> se)), <span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>cohens_h       OR    OR_lo    OR_hi 
+   0.723    4.447    2.872    6.885 </code></pre>
+</div>
+</div>
+<p><strong>H2 — ethicality of the misleading option.</strong> The palter option was rated far more ethical than the lie option (palter <em>M</em> = 4.17, <em>SD</em> = 1.46; lie <em>M</em> = 2.01, <em>SD</em> = 1.45), difference 2.15 [1.86, 2.45], Cohen’s <em>d</em> = 1.48, <em>t</em>(374) = 14.3, <em>p</em> &lt; .001. The original reported <em>M</em> = 4.05 vs.&nbsp;2.12, <em>d</em> = 1.39 — essentially identical.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>xp <span class="ot">&lt;-</span> prereg<span class="sc">$</span>ethics_index[prereg<span class="sc">$</span>condition <span class="sc">==</span> <span class="st">"palter"</span>]</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>xl <span class="ot">&lt;-</span> prereg<span class="sc">$</span>ethics_index[prereg<span class="sc">$</span>condition <span class="sc">==</span> <span class="st">"lie"</span>]</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">t.test</span>(xp, xl)                                         <span class="co"># Welch t test (palter - lie)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Welch Two Sample t-test
+
+data:  xp and xl
+t = 14.348, df = 373.97, p-value &lt; 2.2e-16
+alternative hypothesis: true difference in means is not equal to 0
+95 percent confidence interval:
+ 1.857501 2.447464
+sample estimates:
+mean of x mean of y 
+ 4.166667  2.014184 </code></pre>
+</div>
+</div>
+<p><em>Reliability gate.</em> The three-item index was reliable overall (Cronbach’s α = 0.87) and within each condition (palter α = 0.80, lie α = 0.83; original 0.79 and 0.88), with inter-item correlations of .64–.74. Because overall α ≥ .70, the index-based analyses were used as planned, and the pre-specified fallback — three item-level single-mediator models (Bonferroni-corrected) — was <strong>not</strong> triggered.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>items <span class="ot">&lt;-</span> prereg[, <span class="fu">c</span>(<span class="st">"honest"</span>, <span class="st">"ethical"</span>, <span class="st">"decep_rev"</span>)]</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>psych<span class="sc">::</span><span class="fu">alpha</span>(items)<span class="sc">$</span>total<span class="sc">$</span>raw_alpha                    <span class="co"># overall raw alpha</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.8673423</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sapply</span>(<span class="fu">c</span>(<span class="st">"palter"</span>, <span class="st">"lie"</span>), <span class="cf">function</span>(g)                 <span class="co"># alpha by condition</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  psych<span class="sc">::</span><span class="fu">alpha</span>(prereg[prereg<span class="sc">$</span>condition <span class="sc">==</span> g, <span class="fu">c</span>(<span class="st">"honest"</span>, <span class="st">"ethical"</span>, <span class="st">"decep_rev"</span>)])<span class="sc">$</span>total<span class="sc">$</span>raw_alpha)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   palter       lie 
+0.7956016 0.8272044 </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">cor</span>(<span class="fu">na.omit</span>(<span class="fu">as.matrix</span>(items))), <span class="dv">2</span>)               <span class="co"># inter-item correlations</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>          honest ethical decep_rev
+honest      1.00    0.74      0.64
+ethical     0.74    1.00      0.69
+decep_rev   0.64    0.69      1.00</code></pre>
+</div>
+</div>
+<p><strong>Mediation — condition → ethicality → choice.</strong> Fit in lavaan with the binary choice declared <code>ordered</code> (WLSMV/probit). The indirect effect was positive and significant by <strong>both</strong> pre-specified methods: the primary Monte Carlo CI was [0.376, 0.679], and the bias-corrected bootstrap CI (BCa, 2,000 resamples — the analog of the original’s Sobel–Goodman bootstrap) was [0.328, 0.765], both excluding zero (standardized indirect ≈ 0.24). The direct path remained substantial (<em>c′</em> ≈ 0.40, probit), indicating <em>partial</em> mediation — perceiving the palter as more ethical accounts for part, but not all, of the elevated tendency to mislead. The original reported a significant indirect effect under a logistic model with a Sobel–Goodman bootstrap; the replication matches in sign and significance under both CI methods.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>med <span class="ot">&lt;-</span> <span class="st">'</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="st">  ethics_index ~ a*condition_num</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="st">  misleading   ~ b*ethics_index + cp*condition_num</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="st">  indirect := a*b</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="st">  total    := indirect + cp</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="st">'</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="do">## Point estimates + Monte Carlo CI (primary), WLSMV / probit</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">sem</span>(med, <span class="at">data =</span> prereg, <span class="at">ordered =</span> <span class="st">"misleading"</span>, <span class="at">estimator =</span> <span class="st">"WLSMV"</span>)</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="fu">parameterEstimates</span>(fit, <span class="at">standardized =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(label <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"a"</span>, <span class="st">"b"</span>, <span class="st">"cp"</span>) <span class="sc">|</span> lhs <span class="sc">==</span> <span class="st">"indirect"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>           lhs op           rhs    label   est    se      z pvalue ci.lower
+1 ethics_index  ~ condition_num        a 2.152 0.181 11.882  0.000    1.797
+2   misleading  ~  ethics_index        b 0.242 0.030  8.074  0.000    0.183
+3   misleading  ~ condition_num       cp 0.401 0.139  2.890  0.004    0.129
+4     indirect :=           a*b indirect 0.522 0.077  6.768  0.000    0.370
+  ci.upper std.lv std.all std.nox
+1    2.508  2.152   0.596   1.191
+2    0.301  0.242   0.397   0.397
+3    0.673  0.401   0.182   0.364
+4    0.673  0.522   0.237   0.473</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">monteCarloCI</span>(fit, <span class="at">nRep =</span> <span class="dv">20000</span>)[<span class="st">"indirect"</span>, ]          <span class="co"># primary indirect-effect CI</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>           est ci.lower ci.upper
+indirect 0.522    0.376    0.679</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Bias-corrected (BCa) bootstrap of the indirect effect -- the analog of the</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="do">## original's Sobel-Goodman bootstrap. lavaan requires a (D)WLS estimator for</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="do">## se = "bootstrap"; DWLS yields the SAME point estimates as WLSMV. (Slow: 2,000 refits.)</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>fit_boot <span class="ot">&lt;-</span> <span class="fu">sem</span>(med, <span class="at">data =</span> prereg, <span class="at">ordered =</span> <span class="st">"misleading"</span>,</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>                <span class="at">estimator =</span> <span class="st">"DWLS"</span>, <span class="at">se =</span> <span class="st">"bootstrap"</span>, <span class="at">bootstrap =</span> <span class="dv">2000</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: lavaan-&gt;lav_options_set():  
+   information will be set to "expected" for estimator = "dwls"</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">parameterEstimates</span>(fit_boot, <span class="at">boot.ci.type =</span> <span class="st">"bca.simple"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(lhs <span class="sc">==</span> <span class="st">"indirect"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="at">effect =</span> lhs, est, <span class="at">boot_lo =</span> ci.lower, <span class="at">boot_hi =</span> ci.upper)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    effect   est boot_lo boot_hi
+1 indirect 0.522   0.328   0.765</code></pre>
+</div>
+</div>
+<p><em>Side-by-side with the original.</em> Both target effects, replication vs.&nbsp;original — the misleading-choice rate (H1) and the ethicality index (H2) by condition:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>rep_vals <span class="ot">&lt;-</span> prereg <span class="sc">|&gt;</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(condition) <span class="sc">|&gt;</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">choice =</span> <span class="fu">mean</span>(misleading) <span class="sc">*</span> <span class="dv">100</span>, <span class="at">ethics =</span> <span class="fu">mean</span>(ethics_index), <span class="at">.groups =</span> <span class="st">"drop"</span>)</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>comp <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">panel =</span> <span class="st">"Chose to mislead (%)"</span>, <span class="at">study =</span> <span class="st">"Original (2017)"</span>,</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>         <span class="at">condition =</span> <span class="fu">c</span>(<span class="st">"Palter"</span>, <span class="st">"Lie"</span>), <span class="at">value =</span> <span class="fu">c</span>(<span class="dv">71</span>, <span class="dv">55</span>)),</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">panel =</span> <span class="st">"Chose to mislead (%)"</span>, <span class="at">study =</span> <span class="st">"Replication (2026)"</span>,</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>         <span class="at">condition =</span> <span class="fu">c</span>(<span class="st">"Palter"</span>, <span class="st">"Lie"</span>),</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>         <span class="at">value =</span> <span class="fu">c</span>(rep_vals<span class="sc">$</span>choice[rep_vals<span class="sc">$</span>condition <span class="sc">==</span> <span class="st">"palter"</span>],</span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>                   rep_vals<span class="sc">$</span>choice[rep_vals<span class="sc">$</span>condition <span class="sc">==</span> <span class="st">"lie"</span>])),</span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">panel =</span> <span class="st">"Ethicality index (1-7)"</span>, <span class="at">study =</span> <span class="st">"Original (2017)"</span>,</span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>         <span class="at">condition =</span> <span class="fu">c</span>(<span class="st">"Palter"</span>, <span class="st">"Lie"</span>), <span class="at">value =</span> <span class="fu">c</span>(<span class="fl">4.05</span>, <span class="fl">2.12</span>)),</span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">panel =</span> <span class="st">"Ethicality index (1-7)"</span>, <span class="at">study =</span> <span class="st">"Replication (2026)"</span>,</span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>         <span class="at">condition =</span> <span class="fu">c</span>(<span class="st">"Palter"</span>, <span class="st">"Lie"</span>),</span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>         <span class="at">value =</span> <span class="fu">c</span>(rep_vals<span class="sc">$</span>ethics[rep_vals<span class="sc">$</span>condition <span class="sc">==</span> <span class="st">"palter"</span>],</span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>                   rep_vals<span class="sc">$</span>ethics[rep_vals<span class="sc">$</span>condition <span class="sc">==</span> <span class="st">"lie"</span>]))</span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">condition =</span> <span class="fu">factor</span>(condition, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"Palter"</span>, <span class="st">"Lie"</span>)),</span>
+<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a>         <span class="at">lab =</span> <span class="fu">ifelse</span>(panel <span class="sc">==</span> <span class="st">"Chose to mislead (%)"</span>,</span>
+<span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a>                      <span class="fu">paste0</span>(<span class="fu">round</span>(value), <span class="st">"%"</span>), <span class="fu">sprintf</span>(<span class="st">"%.1f"</span>, value)))</span>
+<span id="cb23-22"><a href="#cb23-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-23"><a href="#cb23-23" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(comp, <span class="fu">aes</span>(condition, value, <span class="at">fill =</span> study)) <span class="sc">+</span></span>
+<span id="cb23-24"><a href="#cb23-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="fl">0.7</span>), <span class="at">width =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
+<span id="cb23-25"><a href="#cb23-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> lab), <span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="fl">0.7</span>), <span class="at">vjust =</span> <span class="sc">-</span><span class="fl">0.4</span>, <span class="at">size =</span> <span class="fl">3.2</span>) <span class="sc">+</span></span>
+<span id="cb23-26"><a href="#cb23-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> panel, <span class="at">scales =</span> <span class="st">"free_y"</span>) <span class="sc">+</span></span>
+<span id="cb23-27"><a href="#cb23-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">expand =</span> <span class="fu">expansion</span>(<span class="at">mult =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.12</span>))) <span class="sc">+</span></span>
+<span id="cb23-28"><a href="#cb23-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Original (2017)"</span> <span class="ot">=</span> <span class="st">"grey60"</span>, <span class="st">"Replication (2026)"</span> <span class="ot">=</span> <span class="st">"#2c7fb8"</span>)) <span class="sc">+</span></span>
+<span id="cb23-29"><a href="#cb23-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="cn">NULL</span>, <span class="at">fill =</span> <span class="cn">NULL</span>,</span>
+<span id="cb23-30"><a href="#cb23-30" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">"Rogers et al. (2017) Study 1: original vs. replication"</span>) <span class="sc">+</span></span>
+<span id="cb23-31"><a href="#cb23-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">12</span>) <span class="sc">+</span></span>
+<span id="cb23-32"><a href="#cb23-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"top"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="ReplicationReport_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="exploratory-analyses" class="level3">
+<h3 class="anchored" data-anchor-id="exploratory-analyses">Exploratory analyses</h3>
+<p>Three follow-ups, none preregistered as confirmatory.</p>
+<p><strong>(i) Robustness across sample definitions.</strong> We re-ran the three confirmatory analyses — the H1 Pearson χ², the H2 Welch <em>t</em> test, and the WLSMV/probit mediation (with both the Monte Carlo and the BCa bootstrap CI) — on three pre-specified alternative samples: <strong>recall-pass</strong> (both probability-memory items correct), <strong>ratings-first</strong> (only the arm whose rating block preceded the bonus, matching the original’s fixed order), and <strong>quality-clean</strong> (reCAPTCHA ≥ .5 and not flagged as a Qualtrics duplicate). H1 and H2 held in every sample (table below). The mediation also held throughout: the standardized indirect effect stayed positive (0.19–0.26) with both the Monte Carlo and the bootstrap CI excluding zero in all four samples (full per-sample mediation table, including bootstrap CIs, in <code>script/02_analysis.html</code>).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>samples <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">preregistered =</span> prereg,</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">recall_pass   =</span> prereg <span class="sc">|&gt;</span> <span class="fu">filter</span>(mem_misleading_correct, mem_honest_correct),</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">ratings_first =</span> prereg <span class="sc">|&gt;</span> <span class="fu">filter</span>(rating_bonus_order <span class="sc">==</span> <span class="st">"ratings_first"</span>),</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">quality_clean =</span> prereg <span class="sc">|&gt;</span> <span class="fu">filter</span>(recaptcha <span class="sc">&gt;=</span> <span class="fl">0.5</span>, <span class="sc">!</span>qualtrics_dup_flag)</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a><span class="fu">imap_dfr</span>(samples, <span class="cf">function</span>(s, nm) {</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>  xp <span class="ot">&lt;-</span> s<span class="sc">$</span>misleading[s<span class="sc">$</span>condition <span class="sc">==</span> <span class="st">"palter"</span>]; xl <span class="ot">&lt;-</span> s<span class="sc">$</span>misleading[s<span class="sc">$</span>condition <span class="sc">==</span> <span class="st">"lie"</span>]</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>  chi <span class="ot">&lt;-</span> <span class="fu">suppressWarnings</span>(<span class="fu">chisq.test</span>(<span class="fu">table</span>(s<span class="sc">$</span>condition, <span class="fu">factor</span>(s<span class="sc">$</span>misleading, <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>))),</span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">correct =</span> <span class="cn">FALSE</span>))</span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>  ep <span class="ot">&lt;-</span> s<span class="sc">$</span>ethics_index[s<span class="sc">$</span>condition <span class="sc">==</span> <span class="st">"palter"</span>]; el <span class="ot">&lt;-</span> s<span class="sc">$</span>ethics_index[s<span class="sc">$</span>condition <span class="sc">==</span> <span class="st">"lie"</span>]</span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>  tt <span class="ot">&lt;-</span> <span class="fu">t.test</span>(ep, el)</span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>  sp <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(((<span class="fu">length</span>(ep) <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> <span class="fu">var</span>(ep) <span class="sc">+</span> (<span class="fu">length</span>(el) <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">*</span> <span class="fu">var</span>(el)) <span class="sc">/</span> (<span class="fu">length</span>(ep) <span class="sc">+</span> <span class="fu">length</span>(el) <span class="sc">-</span> <span class="dv">2</span>))</span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">sample =</span> nm, <span class="at">n =</span> <span class="fu">nrow</span>(s),</span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>         <span class="at">H1_palter =</span> <span class="fu">mean</span>(xp), <span class="at">H1_lie =</span> <span class="fu">mean</span>(xl),</span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>         <span class="at">H1_chisq =</span> <span class="fu">unname</span>(chi<span class="sc">$</span>statistic), <span class="at">H1_p =</span> chi<span class="sc">$</span>p.value,</span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>         <span class="at">H2_d =</span> (<span class="fu">mean</span>(ep) <span class="sc">-</span> <span class="fu">mean</span>(el)) <span class="sc">/</span> sp, <span class="at">H2_t =</span> <span class="fu">unname</span>(tt<span class="sc">$</span>statistic), <span class="at">H2_p =</span> tt<span class="sc">$</span>p.value)</span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a>}) <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">where</span>(is.numeric), <span class="sc">~</span> <span class="fu">signif</span>(.x, <span class="dv">3</span>)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 9
+  sample            n H1_palter H1_lie H1_chisq     H1_p  H2_d  H2_t     H2_p
+  &lt;chr&gt;         &lt;dbl&gt;     &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;
+1 preregistered   376     0.617  0.266     47   7.16e-12  1.48 14.3  1.67e-37
+2 recall_pass     331     0.602  0.285     33.8 6.1 e- 9  1.49 13.6  1.09e-33
+3 ratings_first   191     0.594  0.284     18.6 1.64e- 5  1.35  9.34 2.65e-17
+4 quality_clean   347     0.615  0.254     45.9 1.25e-11  1.44 13.4  3.51e-33</code></pre>
+</div>
+</div>
+<p><strong>(ii) Order effect.</strong> A 2 (condition) × 2 (rating/bonus order) linear model on the ethicality index, <code>lm(ethics_index ~ condition * rating_bonus_order)</code>, on the preregistered sample. The presentation order had no main effect (bonus-first <em>b</em> = −0.11, <em>p</em> = .62) and did not interact with condition (<em>b</em> = 0.20, <em>p</em> = .51); the condition effect was large (<em>b</em> = 2.06, <em>p</em> &lt; .001). This supports the validity of the novel bonus-first arm and the rating measure.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">lm</span>(ethics_index <span class="sc">~</span> condition <span class="sc">*</span> rating_bonus_order, <span class="at">data =</span> prereg))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = ethics_index ~ condition * rating_bonus_order, data = prereg)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-3.1215 -0.9606 -0.4000  0.8785  5.0394 
+
+Coefficients:
+                                              Estimate Std. Error t value
+(Intercept)                                     2.0667     0.1495  13.820
+conditionpalter                                 2.0549     0.2109   9.742
+rating_bonus_orderbonus_first                  -0.1061     0.2126  -0.499
+conditionpalter:rating_bonus_orderbonus_first   0.1983     0.3007   0.660
+                                              Pr(&gt;|t|)    
+(Intercept)                                     &lt;2e-16 ***
+conditionpalter                                 &lt;2e-16 ***
+rating_bonus_orderbonus_first                    0.618    
+conditionpalter:rating_bonus_orderbonus_first    0.510    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 1.458 on 372 degrees of freedom
+Multiple R-squared:  0.3558,    Adjusted R-squared:  0.3506 
+F-statistic: 68.48 on 3 and 372 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+</div>
+<p><strong>(iii) Probability memory.</strong> The proportion correctly recalling the condition-specific success probability of the misleading response (60% palter / 80% lie) and the 30% honest-response probability, by condition. Recall was high (roughly 89–94% correct), indicating participants attended to the incentive manipulation. The one notable departure from the original was a much lower willingness to lie outright in the lie condition (26.6% vs.&nbsp;the original 55%).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>prereg <span class="sc">|&gt;</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(condition) <span class="sc">|&gt;</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">recall_misleading =</span> <span class="fu">mean</span>(mem_misleading_correct, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">recall_honest     =</span> <span class="fu">mean</span>(mem_honest_correct, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">.groups =</span> <span class="st">"drop"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">where</span>(is.numeric), <span class="sc">~</span> <span class="fu">round</span>(.x, <span class="dv">3</span>)))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 3
+  condition recall_misleading recall_honest
+  &lt;fct&gt;                 &lt;dbl&gt;         &lt;dbl&gt;
+1 lie                   0.936         0.92 
+2 palter                0.894         0.952</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="discussion" class="level2">
+<h2 class="anchored" data-anchor-id="discussion">Discussion</h2>
+<section id="summary-of-replication-attempt" class="level3">
+<h3 class="anchored" data-anchor-id="summary-of-replication-attempt">Summary of Replication Attempt</h3>
+<p>The confirmatory result <strong>replicated successfully.</strong> Participants chose to mislead substantially more often when the misleading option was a palter than when it was an outright lie (61.7% vs.&nbsp;26.6%), χ²(1) = 47.0, <em>p</em> &lt; .001 — the same direction as Rogers et al.’s original effect (71% vs.&nbsp;55%) and larger in magnitude. The secondary results also replicated: the palter option was judged much more ethical than the lie option (<em>d</em> = 1.48, vs.&nbsp;the original <em>d</em> = 1.39), and the choice effect was partially mediated by ethicality perceptions (a significant positive indirect effect, confirmed by both the Monte Carlo and the bias-corrected bootstrap CI). By every preregistered criterion, this is a clear replication of Study 1.</p>
+</section>
+<section id="commentary" class="level3">
+<h3 class="anchored" data-anchor-id="commentary">Commentary</h3>
+<p>The effect was, if anything, stronger than the original, and the reason is informative: paltering remained common (61.7%, near the original 71%), but willingness to lie outright collapsed (26.6%, down from 55%) — even though lying was the <em>more</em> lucrative option (an 80% vs.&nbsp;60% chance of the sale). This widens the palter–lie gap to 35 points (vs.&nbsp;16 in the original) and sharpens the paper’s core claim that people will sacrifice expected value to avoid bald-faced lies. A consequence is that the study was over-powered: it was sized for the original effect (<em>h</em> = 0.333) but observed roughly twice that (<em>h</em> ≈ 0.72).</p>
+<p>The differences from the original appear unlikely to be moderators. The effect held across every sample definition we examined, the added presentation-order counterbalancing had no detectable influence, and the comprehension gate and Prolific sampling are not conditions the original or subsequent work identifies as necessary for the effect. The lower lie rate could plausibly reflect platform or cohort differences (a 2026 Prolific sample), heightened sensitivity to honesty norms, or social-desirability pressure in the disclosure context; these are speculative and, importantly, do not bear on the direction or significance of the replicated effect. We are not aware of objections from the original authors specific to this attempt; the materials, incentives, and measures were preserved as faithfully as the platform allowed.</p>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

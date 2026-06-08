@@ -1,0 +1,400 @@
+---
+title: "Analysis: Rogers et al. (2017) Study 1 Close Replication"
+author: "Ke Fang"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+    code_folding: show
+    theme: flatly
+    df_print: kable
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, cache = FALSE)
+
+library(tidyverse)
+library(lavaan)      # mediation (WLSMV / probit)
+library(semTools)    # >= 0.5-6 for monteCarloCI()
+
+set.seed(42)
+
+## --- config -----------------------------------------------------------------
+data_path     <- "../data/data_clean.rds"   # produced by 01_import_preprocess.R
+N_MC          <- 20000               # Monte Carlo draws for indirect-effect CI
+B_BOOT        <- 2000                # bootstrap resamples for the indirect effect
+```
+
+# Purpose and structure
+
+This document follows a **models-first** design. Each confirmatory test and the
+mediation are written as a *function of a data frame*; the analysis samples are
+defined separately as a named list; and a thin driver runs every model on every
+sample. Adding a new (e.g. exploratory) sample is a single line in the `samples`
+list, and all samples are guaranteed to pass through identical code.
+
+It assumes you have already run `01_import_preprocess.R`, which writes the
+analysis-ready data (`data_clean.rds`) with the variables specified in the
+contract below. Confirmatory analyses subset on `analysis_ok`.
+
+# Variable contract
+
+Working backwards from each analysis, these are the variables every model needs,
+their required form, and where they come from. The preprocessing script produces
+all of them.
+
+| Variable | Type / form | Derived from | Consumed by |
+|---|---|---|---|
+| `misleading` | integer 0/1 (declarable `ordered`) | `coalesce(QID5, QID7)` classified by content | H1 outcome; mediation Y; memory analysis covariate |
+| `condition` | factor (`lie`,`palter`) | embedded `condition` | H1 & H2 grouping; descriptives |
+| `condition_num` | numeric 0/1 (lie=0, palter=1) | `condition` | mediation X (lavaan needs numeric) |
+| `honest`, `ethical`, `deceptive` | integer 1–7 | `parse_rating(coalesce(...))` | reliability (α); item-level contingency; index |
+| `decep_rev` | integer 1–7 | `8 - deceptive` | index; reliability; contingency |
+| `ethics_index` | numeric (mean of 3) | `mean(honest, ethical, decep_rev)` | H2 outcome; mediation M |
+| `rating_bonus_order` | factor | embedded | order exploratory; ratings-first robustness sample |
+| `mem_misleading_correct`, `mem_honest_correct` | logical | memory items vs condition-specific key | recall-pass sample; memory exploratory |
+| `bonus_earned` | logical | `bonus_draw <= threshold(choice)` | incentive integrity (descriptive) |
+| `analysis_ok` | logical | consent/real/comprehension/choice/AI/dup | defines confirmatory sample |
+| `age`, `gender` | int / chr | demographics | sample description |
+
+```{r load-and-check}
+clean <- readRDS(data_path)
+
+required <- c("misleading","condition","condition_num","ethics_index",
+              "honest","ethical","deceptive","decep_rev",
+              "rating_bonus_order","mem_misleading_correct","mem_honest_correct",
+              "bonus_earned","analysis_ok","age","gender")
+missing_vars <- setdiff(required, names(clean))
+if (length(missing_vars))
+  stop("Missing required variables (re-run 01_import_preprocess.R): ",
+       paste(missing_vars, collapse = ", "))
+
+clean <- clean |> mutate(condition = factor(condition, levels = c("lie","palter")))
+cat("Loaded the FULL flagged dataset:", nrow(clean), "rows (",
+    sum(clean$analysis_ok), "flagged eligible,",
+    nrow(clean) - sum(clean$analysis_ok), "flagged out but retained ).\n")
+```
+
+# Analysis samples (defined up front)
+
+`data_clean.rds` is the full flagged dataset — `01` drops no rows, so it contains
+all responses (incompletes, screen-outs, and duplicates included, each carrying
+flags). We build every analysis sample here, at the start, by filtering on those
+flags. The confirmatory base is `analysis_ok`; add an exploratory subset by
+appending one line and every model below picks it up automatically.
+
+```{r samples}
+base <- clean |> filter(analysis_ok)
+
+samples <- list(
+  preregistered = base,                                                  # confirmatory
+  recall_pass   = base |> filter(mem_misleading_correct, mem_honest_correct),
+  ratings_first = base |> filter(rating_bonus_order == "ratings_first"),  # original-analog
+  quality_clean = base |> filter(recaptcha >= 0.5, !qualtrics_dup_flag)
+)
+
+tibble(sample = names(samples), n = map_int(samples, nrow))
+```
+
+# Models (defined once)
+
+Small effect-size helpers first, then one function per analysis. Each takes a
+data frame (already subset to a sample) and returns a tidy one-row (or few-row)
+tibble, so results stack cleanly across samples.
+
+```{r helpers}
+cohens_h <- function(p1, p2) 2*asin(sqrt(p1)) - 2*asin(sqrt(p2))
+
+cohens_d <- function(x1, x2) {            # x1 - x2, pooled SD
+  n1 <- sum(!is.na(x1)); n2 <- sum(!is.na(x2))
+  sp <- sqrt(((n1-1)*var(x1, na.rm=TRUE) + (n2-1)*var(x2, na.rm=TRUE)) / (n1+n2-2))
+  (mean(x1, na.rm=TRUE) - mean(x2, na.rm=TRUE)) / sp
+}
+
+cronbach_alpha <- function(items) {       # items: data frame of columns
+  items <- na.omit(as.matrix(items)); k <- ncol(items); vc <- var(items)
+  (k/(k-1)) * (1 - sum(diag(vc))/sum(vc))
+}
+
+odds_ratio <- function(tab) {             # tab: rows c(lie,palter) x cols c(0,1)
+  if (any(tab == 0)) tab <- tab + 0.5     # Haldane correction if a zero cell
+  or <- (tab["palter","1"]*tab["lie","0"]) / (tab["palter","0"]*tab["lie","1"])
+  se <- sqrt(sum(1/tab))
+  c(OR = unname(or),
+    OR_lo = unname(exp(log(or) - 1.96*se)),
+    OR_hi = unname(exp(log(or) + 1.96*se)))
+}
+
+## robust pull of a Monte Carlo CI for one defined parameter
+mc_ci <- function(fit, label, nRep, seed = 42) {
+  set.seed(seed)
+  mc <- tryCatch(semTools::monteCarloCI(fit, nRep = nRep), error = function(e) NULL)
+  if (is.null(mc) || !(label %in% rownames(mc))) return(c(lo = NA_real_, hi = NA_real_))
+  cols <- colnames(mc)
+  lo <- cols[grepl("lower", cols, ignore.case = TRUE)][1]
+  hi <- cols[grepl("upper", cols, ignore.case = TRUE)][1]
+  c(lo = mc[label, lo], hi = mc[label, hi])
+}
+
+## robust pull of a parameter row by label OR defined-name
+get_par <- function(pe, name) {
+  row <- pe[!is.na(pe$label) & pe$label == name, , drop = FALSE]
+  if (nrow(row) == 0) row <- pe[pe$op == ":=" & pe$lhs == name, , drop = FALSE]
+  row
+}
+```
+
+## H1 — choice rate
+
+```{r model-h1}
+run_h1 <- function(d) {
+  d <- d |> filter(!is.na(misleading), !is.na(condition))
+  tab <- table(factor(d$condition, levels = c("lie","palter")),
+               factor(d$misleading, levels = c(0, 1)))
+  xp <- d$misleading[d$condition == "palter"]
+  xl <- d$misleading[d$condition == "lie"]
+  chi <- suppressWarnings(chisq.test(tab, correct = FALSE))   # Pearson, no Yates
+  pt  <- suppressWarnings(prop.test(c(sum(xp), sum(xl)), c(length(xp), length(xl)),
+                                    correct = FALSE))          # CI for palter - lie
+  orr <- odds_ratio(tab)
+  tibble(n = nrow(d), n_palter = length(xp), n_lie = length(xl),
+         p_palter = mean(xp), p_lie = mean(xl), diff = mean(xp) - mean(xl),
+         diff_lo = pt$conf.int[1], diff_hi = pt$conf.int[2],
+         cohens_h = cohens_h(mean(xp), mean(xl)),
+         OR = orr["OR"], OR_lo = orr["OR_lo"], OR_hi = orr["OR_hi"],
+         chisq = unname(chi$statistic), df = unname(chi$parameter), p = chi$p.value)
+}
+```
+
+## H2 — ethicality index (+ reliability gate)
+
+```{r model-h2}
+run_h2 <- function(d) {
+  d <- d |> filter(!is.na(ethics_index), !is.na(condition))
+  xp <- d$ethics_index[d$condition == "palter"]
+  xl <- d$ethics_index[d$condition == "lie"]
+  tt <- t.test(xp, xl)                      # Welch; estimate/CI for palter - lie
+  alpha_overall <- cronbach_alpha(d |> select(honest, ethical, decep_rev))
+  tibble(n = nrow(d), n_palter = length(xp), n_lie = length(xl),
+         m_palter = mean(xp), sd_palter = sd(xp),
+         m_lie = mean(xl), sd_lie = sd(xl),
+         diff = mean(xp) - mean(xl), diff_lo = tt$conf.int[1], diff_hi = tt$conf.int[2],
+         cohens_d = cohens_d(xp, xl),
+         t = unname(tt$statistic), df = unname(tt$parameter), p = tt$p.value,
+         alpha_overall = alpha_overall)
+}
+
+run_reliability <- function(d) {
+  items <- d |> select(honest, ethical, decep_rev)
+  by <- d |> group_by(condition) |>
+    summarise(alpha = cronbach_alpha(pick(honest, ethical, decep_rev)),
+              n = sum(complete.cases(pick(honest, ethical, decep_rev))), .groups = "drop")
+  list(alpha_overall = cronbach_alpha(items),
+       by_condition = by,
+       inter_item = round(cor(na.omit(items)), 2))
+}
+```
+
+## Mediation — condition → ethicality → choice
+
+Primary: the single-index mediator with the binary outcome declared `ordered`
+(WLSMV / probit). Indirect effect via Monte Carlo CI (primary) and, optionally,
+a bias-corrected bootstrap (sensitivity). Probit coefficients are not comparable
+in magnitude to the original's logit values; the sign and significance of the
+indirect effect are the replication target, and we report the standardized
+indirect effect.
+
+```{r model-mediation}
+MED_MODEL <- '
+  ethics_index ~ a*condition_num
+  misleading   ~ b*ethics_index + cp*condition_num
+  indirect := a*b
+  total    := indirect + cp
+'
+
+run_mediation_index <- function(d, n_mc = N_MC, B = B_BOOT, seed = 42) {
+  d <- d |> filter(!is.na(ethics_index), !is.na(misleading), !is.na(condition_num))
+  fit <- tryCatch(sem(MED_MODEL, data = d, ordered = "misleading",
+                      estimator = "WLSMV"), error = function(e) NULL)
+  if (is.null(fit))
+    return(tibble(n = nrow(d), note = "point-estimate model did not fit"))
+
+  pe  <- parameterEstimates(fit, standardized = TRUE)
+  a   <- get_par(pe, "a"); b <- get_par(pe, "b")
+  cp  <- get_par(pe, "cp"); ind <- get_par(pe, "indirect")
+  mc  <- mc_ci(fit, "indirect", n_mc, seed)
+
+  ## Bias-corrected bootstrap of the indirect effect -- ALWAYS run (the analog of
+  ## the original's Sobel-Goodman bootstrap). NB: lavaan refuses se="bootstrap"
+  ## with WLSMV ("use (D)WLS estimator for bootstrap"), so the bootstrap fit uses
+  ## DWLS -- which gives IDENTICAL point estimates (the "MV" only adjusts the
+  ## analytic test statistic / SEs, which the bootstrap replaces with the resample
+  ## distribution). On some resamples bca.simple can be unavailable for a defined
+  ## parameter, so we fall back to percentile and never fail silently. boot_n =
+  ## successful resamples, boot_type = which CI was returned, boot_note = the
+  ## error message if the bootstrap fit itself failed.
+  set.seed(seed)
+  fitb <- tryCatch(sem(MED_MODEL, data = d, ordered = "misleading",
+                       estimator = "DWLS", se = "bootstrap", bootstrap = B),
+                   error = function(e) conditionMessage(e))
+  boot_lo <- NA_real_; boot_hi <- NA_real_
+  boot_n  <- NA_integer_; boot_type <- NA_character_; boot_note <- NA_character_
+  if (inherits(fitb, "lavaan")) {
+    boot_n <- tryCatch(nrow(lavInspect(fitb, "boot")), error = function(e) NA_integer_)
+    if (is.na(boot_n))
+      boot_n <- tryCatch(nrow(fitb@boot$coef), error = function(e) NA_integer_)
+    bi <- tryCatch(get_par(parameterEstimates(fitb, boot.ci.type = "bca.simple"), "indirect"),
+                   error = function(e) NULL)
+    if (!is.null(bi) && is.finite(bi$ci.lower) && is.finite(bi$ci.upper)) {
+      boot_lo <- bi$ci.lower; boot_hi <- bi$ci.upper; boot_type <- "bca.simple"
+    } else {                                   # robust fallback
+      bp <- get_par(parameterEstimates(fitb, boot.ci.type = "perc"), "indirect")
+      boot_lo <- bp$ci.lower; boot_hi <- bp$ci.upper; boot_type <- "perc"
+    }
+  } else {
+    boot_note <- substr(as.character(fitb), 1, 80)   # the captured error message
+  }
+
+  tibble(n = nrow(d),
+         a = a$est, b = b$est, cprime = cp$est,
+         indirect = ind$est, indirect_std = ind$std.all,
+         mc_lo = mc["lo"], mc_hi = mc["hi"],
+         mc_excl_0 = !is.na(mc["lo"]) && (mc["lo"] > 0 | mc["hi"] < 0),
+         boot_lo = boot_lo, boot_hi = boot_hi,
+         boot_excl_0 = !is.na(boot_lo) && (boot_lo > 0 | boot_hi < 0),
+         boot_n = boot_n, boot_type = boot_type, boot_note = boot_note)
+}
+
+## Contingency (use only if overall alpha < .70): three SEPARATE single-mediator
+## models, Bonferroni-adjusted, interpreted exploratorily. No simultaneous
+## (parallel) model -> no collinearity among mediators.
+run_mediation_items <- function(d, n_mc = N_MC, seed = 42) {
+  items <- c("honest", "ethical", "decep_rev")
+  d <- d |> filter(!is.na(misleading), !is.na(condition_num),
+                   !is.na(honest), !is.na(ethical), !is.na(decep_rev))
+  map_dfr(items, function(it) {
+    f <- sprintf('%1$s ~ a*condition_num\n misleading ~ b*%1$s + cp*condition_num\n indirect := a*b', it)
+    fit <- tryCatch(sem(f, data = d, ordered = "misleading", estimator = "WLSMV"),
+                    error = function(e) NULL)
+    if (is.null(fit)) return(tibble(mediator = it, note = "model did not fit"))
+    ind <- get_par(parameterEstimates(fit, standardized = TRUE), "indirect")
+    mc  <- mc_ci(fit, "indirect", n_mc, seed)
+    tibble(mediator = it, indirect = ind$est, indirect_std = ind$std.all,
+           mc_lo = mc["lo"], mc_hi = mc["hi"])
+  }) |> mutate(bonferroni_alpha = 0.05 / length(items))
+}
+```
+
+## Descriptives / manipulation checks
+
+```{r model-describe}
+describe_sample <- function(d) {
+  d |> summarise(
+    n = n(), n_palter = sum(condition == "palter"), n_lie = sum(condition == "lie"),
+    mislead_palter = mean(misleading[condition == "palter"]),
+    mislead_lie    = mean(misleading[condition == "lie"]),
+    bonus_earned_rate = mean(bonus_earned, na.rm = TRUE),
+    recall_mis_correct = mean(mem_misleading_correct, na.rm = TRUE),
+    recall_hon_correct = mean(mem_honest_correct, na.rm = TRUE),
+    mean_age = mean(age, na.rm = TRUE)
+  )
+}
+```
+
+# Sample descriptions
+
+```{r run-describe}
+imap_dfr(samples, ~ describe_sample(.x) |> mutate(sample = .y, .before = 1))
+```
+
+# H1 — choice rate, across samples
+
+```{r run-h1}
+imap_dfr(samples, ~ run_h1(.x) |> mutate(sample = .y, .before = 1)) |>
+  mutate(across(where(is.numeric), ~ round(.x, 3)))
+```
+
+The confirmatory test is the `preregistered` row: support requires *p* < .05 and
+`p_palter > p_lie`. Other rows show robustness of the same effect under
+alternative sample definitions.
+
+# H2 — ethicality index, across samples
+
+```{r run-h2}
+imap_dfr(samples, ~ run_h2(.x) |> mutate(sample = .y, .before = 1)) |>
+  mutate(across(where(is.numeric), ~ round(.x, 3)))
+```
+
+`alpha_overall` is the reliability gate. If it is ≥ .70 in the `preregistered`
+sample, H2 and the mediation use the index (the rows above and below). If it is
+< .70, switch to the item-level contingency (below). The `ratings_first` row is
+the pre-specified robustness check matching the original's fixed order.
+
+```{r run-reliability}
+rel <- run_reliability(samples$preregistered)
+cat("Preregistered-sample overall alpha:", round(rel$alpha_overall, 3),
+    if (rel$alpha_overall >= .70) " (>= .70: use index)\n" else " (< .70: use contingency)\n")
+cat("\nBy condition:\n"); print(rel$by_condition)
+cat("\nInter-item correlations:\n"); print(rel$inter_item)
+```
+
+# Mediation, across samples
+
+The indirect effect of condition on the choice to mislead, through perceived
+ethicality. The single-index model is fit per sample with the binary outcome
+declared `ordered` (WLSMV / probit). For each sample we report both the Monte
+Carlo CI (primary) and the bias-corrected bootstrap CI (the analog of the
+original's Sobel-Goodman bootstrap); the bootstrap now runs on every sample. This
+is the slow step — the model is refit `B_BOOT` times per sample (under DWLS, which
+lavaan requires for bootstrapping and which gives the same point estimates as
+WLSMV) — so expect it to take a while.
+
+```{r run-mediation}
+imap_dfr(samples, ~ run_mediation_index(.x) |> mutate(sample = .y, .before = 1)) |>
+  mutate(across(where(is.numeric), ~ round(.x, 3)))
+```
+
+`mc_excl_0` / `boot_excl_0 == TRUE` mean the 95% Monte Carlo / bootstrap CI for
+the indirect effect excludes zero (the inference criterion); the two should agree.
+`indirect_std` is the standardized indirect effect (the magnitude to report,
+given the probit scale). `boot_n` is the number of successful bootstrap resamples
+(below `B_BOOT` means some resamples failed to converge), `boot_type` is which CI
+was returned (`bca.simple`, or `perc` if BCa was unavailable for that fit), and
+`boot_note` carries the error message if the bootstrap fit itself failed.
+
+## Contingency: item-level mediation (only if overall alpha < .70)
+
+```{r run-mediation-items}
+if (rel$alpha_overall < .70) {
+  cat("Overall alpha < .70 -> running three single-mediator models (Bonferroni):\n")
+  print(imap_dfr(samples, ~ run_mediation_items(.x) |> mutate(sample = .y, .before = 1)) |>
+          mutate(across(where(is.numeric), ~ round(.x, 3))))
+} else {
+  cat("Overall alpha >= .70 in the preregistered sample; index mediation is used.\n",
+      "The item-level contingency is not triggered. (run_mediation_items() is\n",
+      "available if you want it as a labeled exploratory analysis.)\n")
+}
+```
+
+# Exploratory: rating/bonus order effect on ratings
+
+Within the preregistered sample, does seeing the bonus outcome before vs. after
+the ratings shift the ethicality index? (Descriptive + a 2×2 condition × order
+model on the index.)
+
+```{r run-order}
+ord <- samples$preregistered
+ord |> group_by(condition, rating_bonus_order) |>
+  summarise(n = n(), mean_index = round(mean(ethics_index, na.rm = TRUE), 2),
+            .groups = "drop")
+
+summary(lm(ethics_index ~ condition * rating_bonus_order, data = ord))
+```
+
+# Reproducibility
+
+```{r session, echo=FALSE}
+sessionInfo()
+```
